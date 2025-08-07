@@ -36,9 +36,8 @@ public class SignUpFragment extends Fragment {
     private void setupClickListeners() {
         binding.btnSignUp.setOnClickListener(v -> {
             String username = binding.etUsername.getText().toString().trim();
-            String email = binding.etEmail.getText().toString().trim();
             String password = binding.etPassword.getText().toString();
-            viewModel.signUp(username, email, password);
+            viewModel.signUp(username, password);
         });
 
         binding.tvLogin.setOnClickListener(v -> {
