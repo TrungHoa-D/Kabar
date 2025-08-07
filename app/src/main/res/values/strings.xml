@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SocialNetwork</string>
+    <string name="Greeting">Hello</string>
+    <string name="Again">Again!</string>
+    <string name="Welcome">Welcome back you’ve been missed</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
