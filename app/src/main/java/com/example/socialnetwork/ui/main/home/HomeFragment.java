@@ -12,25 +12,73 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.databinding.FragmentHomeBinding;
-import com.example.socialnetwork.ui.main.home.adapter.CategoryAdapter;
-import com.example.socialnetwork.ui.main.home.adapter.NewsAdapter;
+import com.example.socialnetwork.ui.main.home.adapter.ArticlesPagerAdapter;
+import com.example.socialnetwork.ui.main.home.adapter.ViewPagerAdapter;
+import com.example.socialnetwork.ui.main.home.model.NewsArticle;
 import com.example.socialnetwork.ui.main.search.SearchFragment;
+import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
-    private CategoryAdapter categoryAdapter;
-    private NewsAdapter newsAdapter;
+    private ViewPager2 articlesViewPager;
+    private final String[] tabTitles = {
+            "All", "Sport", "Politic", "Business", "Health", "Travel", "Science", "Fashion"
+    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this, tabTitles.length);
+        binding.articlesViewPager.setAdapter(viewPagerAdapter);
+
+        new TabLayoutMediator(binding.tabLayout, binding.articlesViewPager,
+                (tab, position) -> tab.setText(tabTitles[position])
+        ).attach();
+
+        List<NewsArticle> mockArticles = new ArrayList<>();
+        mockArticles.add(
+                new NewsArticle(
+                        "Europe", // category
+                        "Ukraine's President Zelensky to BBC: Blood money being paid...",
+                        R.drawable.sample_zelensky,   // imageResId
+                        R.drawable.bbc_news,          // sourceLogoResId
+                        "BBC News",                   // sourceName
+                        "14m ago"                     // time
+                )
+        );
+
+        mockArticles.add(
+                new NewsArticle(
+                        "Technology",
+                        "The Future of Artificial Intelligence",
+                        R.drawable.image_placeholder,
+                        R.drawable.bbc_news,
+                        "Wired",
+                        "2h ago"
+                )
+        );
+
+        mockArticles.add(
+                new NewsArticle(
+                        "Health",
+                        "Healthy breakfast for a productive day",
+                        R.drawable.image_placeholder,
+                        R.drawable.bbc_news,
+                        "Healthline",
+                        "1d ago"
+                )
+        );
 
         // Gắn sự kiện click vào thanh tìm kiếm
         binding.searchBarLayout.setOnClickListener(v -> {
@@ -41,6 +89,7 @@ public class HomeFragment extends Fragment {
             fragmentTransaction.addToBackStack(null); // Thêm vào back stack để người dùng có thể quay lại
             fragmentTransaction.commit();
         });
+
         return view;
     }
 
@@ -49,48 +98,25 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        setupRecyclerViews(); // Gọi phương thức đã được sửa lỗi
+        setupRecyclerViews();
         observeState();
         setupClickListeners();
         viewModel.loadHomepageData();
     }
 
     private void setupRecyclerViews() {
-        // --- SỬA LỖI Ở ĐÂY ---
 
-        // 1. Thiết lập cho Category RecyclerView
-        categoryAdapter = new CategoryAdapter();
-        // Thêm LayoutManager để sắp xếp item theo chiều ngang
-        binding.categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.categoriesRecyclerView.setAdapter(categoryAdapter);
-
-        // 2. Thiết lập cho News RecyclerView
-        newsAdapter = new NewsAdapter();
-        // Thêm LayoutManager để sắp xếp item theo chiều dọc
-        binding.latestRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.latestRecyclerView.setAdapter(newsAdapter);
     }
 
     private void observeState() {
-        viewModel.state.observe(getViewLifecycleOwner(), state -> {
-//             binding.progressBar.setVisibility(state.isLoading ? View.VISIBLE : View.GONE); // Tạm thời comment lại nếu chưa có progressBar
-            if (!state.isLoading) {
-                if (state.categories != null) {
-                    categoryAdapter.submitList(state.categories);
-                }
-                if (state.articles != null) {
-                    newsAdapter.submitList(state.articles);
-                }
-            }
-        });
+
     }
 
     private void setupClickListeners() {
         binding.ivNotification.setOnClickListener(v -> {
-            // Sử dụng action đã định nghĩa trong nav graph để điều hướng
             NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment2_to_notificationFragment);
         });
-        binding.tvTrending.setOnClickListener(v->{
+        binding.seeAll.setOnClickListener(v->{
             NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment2_to_trendingFragment);
         });
     }

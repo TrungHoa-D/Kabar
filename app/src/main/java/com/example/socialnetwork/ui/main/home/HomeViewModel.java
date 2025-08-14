@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.socialnetwork.R;
 import com.example.socialnetwork.ui.main.home.model.NewsArticle;
 import com.example.socialnetwork.ui.main.home.model.NewsCategory;
 
@@ -34,10 +35,43 @@ public class HomeViewModel extends ViewModel {
 
             // Mock data for articles
             List<NewsArticle> articles = new ArrayList<>();
-            articles.add(new NewsArticle("UI/UX Design Trends for 2025", "UX Planet", ""));
-            articles.add(new NewsArticle("How to become a successful freelancer", "Forbes", ""));
-            articles.add(new NewsArticle("The Future of Artificial Intelligence", "Wired", ""));
-            articles.add(new NewsArticle("Healthy breakfast for a productive day", "Healthline", ""));
+
+            articles.add(new NewsArticle(
+                    "Design",
+                    "UI/UX Design Trends for 2025",
+                    R.drawable.image_placeholder,
+                    R.drawable.bbc_news,
+                    "UX Planet",
+                    "2h ago"
+            ));
+
+            articles.add(new NewsArticle(
+                    "Business",
+                    "How to Become a Successful Freelancer",
+                    R.drawable.image_placeholder ,
+                    R.drawable.bbc_news,
+                    "Forbes",
+                    "5h ago"
+            ));
+
+            articles.add(new NewsArticle(
+                    "Technology",
+                    "The Future of Artificial Intelligence",
+                    R.drawable.image_placeholder,
+                    R.drawable.bbc_news,
+                    "Wired",
+                    "1d ago"
+            ));
+
+            articles.add(new NewsArticle(
+                    "Health",
+                    "Healthy Breakfast for a Productive Day",
+                    R.drawable.image_placeholder,
+                    R.drawable.bbc_news,
+                    "Healthline",
+                    "3d ago"
+            ));
+
 
             _state.setValue(new HomeState(false, categories, articles, null));
 

@@ -16,8 +16,6 @@ public class AuthorSearchViewModel extends ViewModel {
 
     // Phương thức để tải dữ liệu tác giả
     public void loadAuthors() {
-        // Đây là nơi bạn sẽ gọi API hoặc truy vấn cơ sở dữ liệu
-        // Dữ liệu giả định
         List<String> dummyAuthors = Arrays.asList("BBC News", "CNN", "Vox", "USA Today", "CNBC");
         authors.setValue(dummyAuthors);
     }

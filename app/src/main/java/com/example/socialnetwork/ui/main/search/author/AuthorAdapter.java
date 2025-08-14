@@ -14,10 +14,6 @@ import java.util.List;
 public class AuthorAdapter extends RecyclerView.Adapter<AuthorAdapter.AuthorViewHolder> {
 
     private List<String> authors;
-    ImageView authorAvatar;
-    TextView authorName;
-    TextView authorFollowers;
-    Button btnFollow;
 
     public AuthorAdapter(List<String> authors) {
         this.authors = authors;
@@ -33,14 +29,14 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorAdapter.AuthorView
     @Override
     public AuthorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_search_author, parent, false); // Đảm bảo ID layout item của bạn là item_search_author
+                .inflate(R.layout.item_search_author, parent, false);
         return new AuthorViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull AuthorViewHolder holder, int position) {
         String author = authors.get(position);
-        holder.authorName.setText(author); // Đảm bảo item_search_author.xml có TextView với id là author_name
+        holder.topicTitle.setText(author);
     }
 
     @Override
@@ -49,10 +45,14 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorAdapter.AuthorView
     }
 
     static class AuthorViewHolder extends RecyclerView.ViewHolder {
-        TextView authorName; // Tên tác giả
-
+        ImageView topicImage;
+        TextView topicTitle;
+        TextView topicDescription;
         public AuthorViewHolder(@NonNull View itemView) {
             super(itemView);
+            topicImage = itemView.findViewById(R.id.iv_topic_image);
+            topicTitle = itemView.findViewById(R.id.tv_topic_title);
+            topicDescription = itemView.findViewById(R.id.tv_topic_description);
         }
     }
 }
