@@ -3,6 +3,8 @@ package com.example.socialnetwork.ui.main.home.model;
 import java.util.Objects;
 
 public class NewsArticle {
+
+    private String id;
     private String category;
     private String title;
     private int imageResId;
@@ -17,6 +19,14 @@ public class NewsArticle {
         this.sourceLogoResId = sourceLogoResId;
         this.sourceName = sourceName;
         this.time = time;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCategory() { return category; }

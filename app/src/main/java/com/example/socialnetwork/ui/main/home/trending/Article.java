@@ -20,6 +20,34 @@ public class Article {
         this.timeAgo = timeAgo;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public String getSourceLogoUrl() {
+        return sourceLogoUrl;
+    }
+
+    public String getTimeAgo() {
+        return timeAgo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,4 +60,6 @@ public class Article {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+
 }

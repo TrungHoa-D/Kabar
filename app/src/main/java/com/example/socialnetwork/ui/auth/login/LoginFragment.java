@@ -81,7 +81,7 @@ public class LoginFragment extends Fragment {
                 }
 
                 Toast.makeText(getContext(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_homeFragment2);
+                NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_homeFragment);
             }
         });
     }

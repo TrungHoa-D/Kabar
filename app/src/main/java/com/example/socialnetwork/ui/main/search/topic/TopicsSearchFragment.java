@@ -48,10 +48,13 @@
             RecyclerView rvTopics = view.findViewById(R.id.rv_topics);
             rvTopics.setLayoutManager(new LinearLayoutManager(getContext()));
 
+            // Khởi tạo adapter rỗng
+            adapter = new TopicAdapter();
+            rvTopics.setAdapter(adapter);
+
             mViewModel = new ViewModelProvider(this).get(TopicsSearchViewModel.class);
             mViewModel.getTopics().observe(getViewLifecycleOwner(), topics -> {
-                adapter = new TopicAdapter(topics);
-                rvTopics.setAdapter(adapter);
+                adapter.setTopics(topics); // cập nhật dữ liệu
             });
         }
     }

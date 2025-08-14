@@ -114,10 +114,10 @@ public class HomeFragment extends Fragment {
 
     private void setupClickListeners() {
         binding.ivNotification.setOnClickListener(v -> {
-            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment2_to_notificationFragment);
+            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment_to_notificationFragment);
         });
         binding.seeAll.setOnClickListener(v->{
-            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment2_to_trendingFragment);
+            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment_to_trendingFragment);
         });
     }
 
