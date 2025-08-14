@@ -17,7 +17,6 @@ public class DataSource {
 
         String category = categories[categoryIndex];
 
-        // Giả lập dữ liệu mẫu (sau này có thể thay bằng API)
         list.add(new NewsArticle(
                 category,
                 category + " - Bài viết 1",
@@ -36,6 +35,46 @@ public class DataSource {
                 "2h ago"
         ));
 
+        list.add(new NewsArticle(
+                category,
+                category + " - Bài viết 3",
+                R.drawable.image_placeholder,
+                R.drawable.bbc_news,
+                "Reuters",
+                "1d ago"
+        ));
+        list.add(new NewsArticle(
+                category,
+                category + " - Bài viết 3",
+                R.drawable.image_placeholder,
+                R.drawable.bbc_news,
+                "Reuters",
+                "1d ago"
+        ));
+        list.add(new NewsArticle(
+                category,
+                category + " - Bài viết 3",
+                R.drawable.image_placeholder,
+                R.drawable.bbc_news,
+                "Reuters",
+                "1d ago"
+        ));
+        list.add(new NewsArticle(
+                category,
+                category + " - Bài viết 3",
+                R.drawable.image_placeholder,
+                R.drawable.bbc_news,
+                "Reuters",
+                "1d ago"
+        ));
+        list.add(new NewsArticle(
+                category,
+                category + " - Bài viết 3",
+                R.drawable.image_placeholder,
+                R.drawable.bbc_news,
+                "Reuters",
+                "1d ago"
+        ));
         list.add(new NewsArticle(
                 category,
                 category + " - Bài viết 3",
