@@ -14,24 +14,24 @@ import android.view.ViewGroup;
 
 import com.example.socialnetwork.R;
 
-public class FillProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
-    private FillProfileViewModel mViewModel;
+    private ProfileViewModel mViewModel;
 
-    public static FillProfileFragment newInstance() {
-        return new FillProfileFragment();
+    public static ProfileFragment newInstance() {
+        return new ProfileFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_fill_profile, container, false);
+        return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(FillProfileViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         // TODO: Use the ViewModel
     }
 

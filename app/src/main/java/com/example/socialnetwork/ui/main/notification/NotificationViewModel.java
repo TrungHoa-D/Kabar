@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.socialnetwork.R;
 import com.example.socialnetwork.ui.main.notification.NotificationItem;
 
 import java.util.ArrayList;
@@ -36,21 +37,21 @@ public class NotificationViewModel extends ViewModel {
         mockList.add(new NotificationItem(
                 "1",
                 NotificationItem.NotificationType.NEWS_POST,
-                "https://placehold.co/100x100/C83737/FFFFFF?text=B", // URL ảnh logo BBC
+                R.drawable.bbc_logo, // URL ảnh logo BBC
                 "BBC News has posted new europe news “Ukraine's President Zele...”",
                 "15m ago"
         ));
         mockList.add(new NotificationItem(
                 "2",
                 NotificationItem.NotificationType.FOLLOW,
-                "https://placehold.co/100x100/E5B8B7/333333?text=M", // URL ảnh avatar
+                R.drawable.modern_salyins, // URL ảnh avatar
                 "Modelyn Saris is now following you",
                 "1h ago"
         ));
         mockList.add(new NotificationItem(
                 "3",
                 NotificationItem.NotificationType.COMMENT,
-                "https://placehold.co/100x100/A98A70/FFFFFF?text=O", // URL ảnh avatar
+                R.drawable.omar, // URL ảnh avatar
                 "Omar Merditz comment to your news “Minting Your First NFT: A... ”",
                 "1h ago"
         ));
@@ -59,21 +60,21 @@ public class NotificationViewModel extends ViewModel {
         mockList.add(new NotificationItem(
                 "4",
                 NotificationItem.NotificationType.FOLLOW,
-                "https://placehold.co/100x100/E5B8B7/333333?text=M",
+                R.drawable.marley,
                 "Marley Botosh is now following you",
                 "1 Day ago"
         ));
         mockList.add(new NotificationItem(
                 "5",
                 NotificationItem.NotificationType.LIKE,
-                "https://placehold.co/100x100/E5B8B7/333333?text=M",
+                R.drawable.cnn_logo,
                 "Modelyn Saris likes your news “Minting Your First NFT: A... ”",
                 "1 Day ago"
         ));
         mockList.add(new NotificationItem(
                 "6",
                 NotificationItem.NotificationType.NEWS_POST,
-                "https://placehold.co/100x100/377EC8/FFFFFF?text=C", // URL ảnh logo CNN
+                R.drawable.modern_salyins, // URL ảnh logo CNN
                 "CNN has posted new travel news “Her train broke down. Her pho...”",
                 "1 Day ago"
         ));

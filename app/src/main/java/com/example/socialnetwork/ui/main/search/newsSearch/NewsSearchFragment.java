@@ -49,15 +49,23 @@ public class NewsSearchFragment extends Fragment {
                 "Europe",
                 "Ukraine's President Zelensky to BBC: Blood money being paid...",
                 R.drawable.sample_zelensky,
-                R.drawable.bbc_news,
+                R.drawable.bbc_logo,
                 "BBC News",
                 "• 14m ago"
         ));
         articles.add(new NewsArticle(
                 "Tech",
                 "Google announces new AI breakthrough in language models",
-                R.drawable.image_placeholder,
-                R.drawable.bbc_news,
+                R.drawable.eu1,
+                R.drawable.bbc_logo,
+                "TechCrunch",
+                "• 1h ago"
+        ));
+        articles.add(new NewsArticle(
+                "Travel",
+                "Google announces new AI breakthrough in language models",
+                R.drawable.wedding,
+                R.drawable.cnn_logo,
                 "TechCrunch",
                 "• 1h ago"
         ));

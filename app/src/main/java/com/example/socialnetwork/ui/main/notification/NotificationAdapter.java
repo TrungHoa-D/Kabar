@@ -45,7 +45,7 @@ public class NotificationAdapter extends ListAdapter<NotificationItem, Notificat
             binding.tvNotificationContent.setText(getFormattedContent(item));
 
             Glide.with(itemView.getContext())
-                    .load(item.avatarUrl)
+                    .load(item.avatarResId)
                     .circleCrop()
                     .into(binding.ivAvatar);
 
