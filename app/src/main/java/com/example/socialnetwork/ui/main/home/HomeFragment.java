@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -82,12 +84,9 @@ public class HomeFragment extends Fragment {
 
         // Gắn sự kiện click vào thanh tìm kiếm
         binding.searchBarLayout.setOnClickListener(v -> {
-            // Chuyển sang SearchFragment
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, new SearchFragment()); // R.id.fragment_container là ID của FrameLayout chứa Fragment
-            fragmentTransaction.addToBackStack(null); // Thêm vào back stack để người dùng có thể quay lại
-            fragmentTransaction.commit();
+            NavController navController =
+                    Navigation.findNavController(requireActivity(), R.id.fragment_container);
+            navController.navigate(R.id.searchFragment);
         });
 
         return view;

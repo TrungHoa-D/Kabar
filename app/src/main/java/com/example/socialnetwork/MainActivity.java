@@ -40,34 +40,20 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            Log.d("BottomNavVisibility", "Destination changed to: " + destination.getLabel() + " (ID: " + destination.getId() + ")");
-
-            boolean shouldHideBottomNav = (destination.getId() == R.id.loginFragment ||
+            if (destination.getId() == R.id.loginFragment ||
                     destination.getId() == R.id.signUpFragment ||
                     destination.getId() == R.id.forgotPasswordFragment ||
                     destination.getId() == R.id.OTPFragment ||
                     destination.getId() == R.id.resetPasswordFragment ||
                     destination.getId() == R.id.resetPasswordSuccessFragment ||
-                    destination.getId() == R.id.searchFragment);
-
-            Log.d("BottomNavVisibility", "Should hide BottomNav for current destination: " + shouldHideBottomNav);
-
-            if (shouldHideBottomNav) {
-                if (binding.bottomNavigationView.getVisibility() == View.VISIBLE) {
-                    binding.bottomNavigationView.setVisibility(View.GONE);
-                    Log.d("BottomNavVisibility", "BottomNav set to GONE for " + destination.getLabel());
-                } else {
-                    Log.d("BottomNavVisibility", "BottomNav already GONE for " + destination.getLabel());
-                }
+                    destination.getId() == R.id.searchFragment
+            ) {
+                binding.bottomNavigationView.setVisibility(View.GONE);
             } else {
-                if (binding.bottomNavigationView.getVisibility() == View.GONE) {
-                    binding.bottomNavigationView.setVisibility(View.VISIBLE);
-                    Log.d("BottomNavVisibility", "BottomNav set to VISIBLE for " + destination.getLabel());
-                } else {
-                    Log.d("BottomNavVisibility", "BottomNav already VISIBLE for " + destination.getLabel());
-                }
+                binding.bottomNavigationView.setVisibility(View.VISIBLE);
             }
         });
+
 
     }
 }

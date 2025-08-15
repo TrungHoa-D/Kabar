@@ -1,5 +1,6 @@
 package com.example.socialnetwork.ui.main.bookmark;
 
+import com.example.socialnetwork.ui.main.home.model.NewsArticle;
 import com.example.socialnetwork.ui.main.home.trending.Article;
 
 import android.view.LayoutInflater;
@@ -15,13 +16,13 @@ import java.util.List;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ArticleViewHolder> {
 
-    private List<Article> articles;
+    private List<NewsArticle> articles;
 
-    public BookmarkAdapter(List<Article> articles) {
+    public BookmarkAdapter(List<NewsArticle> articles) {
         this.articles = articles;
     }
 
-    public void setArticles(List<Article> newArticles) {
+    public void setArticles(List<NewsArticle> newArticles) {
         this.articles = newArticles;
         notifyDataSetChanged();
     }
@@ -52,11 +53,13 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Articl
             this.binding = binding;
         }
 
-        public void bind(Article article) {
+        public void bind(NewsArticle article) {
             binding.tvArticleTitle.setText(article.getTitle());
             binding.tvArticleCategory.setText(article.getCategory());
+            binding.ivArticleLogo.setImageResource(article.getSourceLogoResId());
             binding.tvArticleSource.setText(article.getSourceName());
-            binding.tvArticleTime.setText(article.getTimeAgo());
+            binding.tvArticleTime.setText(article.getTime());
+            binding.ivArticleThumbnail.setImageResource(article.getImageResId());
         }
     }
 }
