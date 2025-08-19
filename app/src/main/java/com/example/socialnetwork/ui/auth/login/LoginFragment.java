@@ -1,5 +1,6 @@
 package com.example.socialnetwork.ui.auth.login;
 // LoginFragment.java
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.example.socialnetwork.MainActivity;
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.databinding.FragmentLoginBinding;
 
@@ -32,7 +35,6 @@ public class LoginFragment extends Fragment {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
                 .get(LoginViewModel.class);
 
-        // **MỚI**: Tự động điền dữ liệu đã lưu
         if (viewModel.hasSavedLoginInfo()) {
             binding.etUsername.setText(viewModel.getSavedUsername());
             binding.etPassword.setText(viewModel.getSavedPassword());
@@ -41,6 +43,7 @@ public class LoginFragment extends Fragment {
 
         setupClickListeners();
         observeState();
+
     }
 
     private void setupClickListeners() {
@@ -52,6 +55,10 @@ public class LoginFragment extends Fragment {
 
         binding.tvSignUp.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_signUpFragment);
+        });
+
+        binding.tvForgotPassword.setOnClickListener(v ->{
+            NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_forgotPasswordFragment);
         });
     }
 
@@ -78,6 +85,14 @@ public class LoginFragment extends Fragment {
             }
         });
     }
+
+    // Đặt hàm này trong LoginFragment.java
+//    private void navigateToMainApp() {
+//        Intent intent = new Intent(requireActivity(), MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        startActivity(intent);
+//        requireActivity().finish();
+//    }
 
     @Override
     public void onDestroyView() {
