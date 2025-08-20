@@ -217,22 +217,24 @@
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
 
-            <!-- Tabs: News and Recent -->
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout_profile"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:tabIndicatorColor="#2563EB"
-                app:tabSelectedTextColor="@color/black"
-                app:tabTextColor="#6B7280" />
+                android:layout_marginStart="16dp"
+                android:text="My Posts"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewPager_profile"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_user_posts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:minHeight="300dp" />
+                android:nestedScrollingEnabled="false"
+                android:paddingHorizontal="16dp"
+                tools:listitem="@layout/item_news_article" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

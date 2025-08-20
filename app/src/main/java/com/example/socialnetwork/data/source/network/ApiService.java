@@ -4,6 +4,7 @@ package com.example.socialnetwork.data.source.network;
 import com.example.socialnetwork.data.model.dto.PagedResponse;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.TopicDto;
+import com.example.socialnetwork.data.model.dto.UserDto;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -32,4 +33,14 @@ public interface ApiService {
 
     @GET("/api/v1/posts/{postId}")
     Call<PostDto> getPostById(@Path("postId") long postId);
+
+    @GET("/api/v1/users/me")
+    Call<UserDto> getCurrentUser();
+
+    @GET("/api/v1/users/{userId}/posts")
+    Call<PagedResponse<PostDto>> getPostsByUser(
+            @Path("userId") String userId,
+            @Query("page") int page,
+            @Query("size") int size
+    );
 }
