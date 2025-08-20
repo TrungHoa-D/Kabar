@@ -4,25 +4,36 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.example.socialnetwork.data.model.dto.TopicDto;
 import com.example.socialnetwork.ui.main.home.NewsCategoryFragment;
+
+import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
-    private int tabCount;
+    private final List<TopicDto> topics;
 
-    public ViewPagerAdapter(@NonNull Fragment fragment, int tabCount) {
+    public ViewPagerAdapter(@NonNull Fragment fragment, List<TopicDto> topics) {
         super(fragment);
-        this.tabCount = tabCount;
+        this.topics = topics;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return NewsCategoryFragment.newInstance(position);
+        if (position == 0) {
+            // Vị trí đầu tiên là tab "All"
+            return NewsCategoryFragment.newInstanceForAll();
+        } else {
+            // Các vị trí sau là cho từng topic
+            long topicId = topics.get(position - 1).getId();
+            return NewsCategoryFragment.newInstanceForTopic(topicId);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return tabCount;
+        // +1 cho tab "All"
+        return (topics != null) ? topics.size() + 1 : 0;
     }
 }

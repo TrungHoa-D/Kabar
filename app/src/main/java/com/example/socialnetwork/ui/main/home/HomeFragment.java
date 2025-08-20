@@ -8,20 +8,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.example.socialnetwork.R;
+import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.data.model.dto.TopicDto;
 import com.example.socialnetwork.databinding.FragmentHomeBinding;
-import com.example.socialnetwork.ui.main.home.adapter.ArticlesPagerAdapter;
 import com.example.socialnetwork.ui.main.home.adapter.ViewPagerAdapter;
-import com.example.socialnetwork.ui.main.home.model.NewsArticle;
-import com.example.socialnetwork.ui.main.search.SearchFragment;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
@@ -31,65 +26,17 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
-    private ViewPager2 articlesViewPager;
-    private final String[] tabTitles = {
-            "All", "Sport", "Politic", "Business", "Health", "Travel", "Science", "Fashion"
-    };
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+        return binding.getRoot();
+    }
 
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this, tabTitles.length);
-        binding.articlesViewPager.setAdapter(viewPagerAdapter);
-
-        new TabLayoutMediator(binding.tabLayout, binding.articlesViewPager,
-                (tab, position) -> tab.setText(tabTitles[position])
-        ).attach();
-
-        List<NewsArticle> mockArticles = new ArrayList<>();
-        mockArticles.add(
-                new NewsArticle(
-                        "Europe", // category
-                        "Ukraine's President Zelensky to BBC: Blood money being paid...",
-                        R.drawable.sample_zelensky,   // imageResId
-                        R.drawable.bbc_news,          // sourceLogoResId
-                        "BBC News",                   // sourceName
-                        "14m ago"                     // time
-                )
-        );
-
-        mockArticles.add(
-                new NewsArticle(
-                        "Technology",
-                        "The Future of Artificial Intelligence",
-                        R.drawable.image_placeholder,
-                        R.drawable.bbc_news,
-                        "Wired",
-                        "2h ago"
-                )
-        );
-
-        mockArticles.add(
-                new NewsArticle(
-                        "Health",
-                        "Healthy breakfast for a productive day",
-                        R.drawable.image_placeholder,
-                        R.drawable.bbc_news,
-                        "Healthline",
-                        "1d ago"
-                )
-        );
-
-        // Gắn sự kiện click vào thanh tìm kiếm
-        binding.searchBarLayout.setOnClickListener(v -> {
-            NavController navController =
-                    Navigation.findNavController(requireActivity(), R.id.fragment_container);
-            navController.navigate(R.id.searchFragment);
+    private void setupRefreshLayout() {
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> {
+            viewModel.loadHomepageData();
         });
-
-        return view;
     }
 
     @Override
@@ -97,27 +44,79 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        setupRecyclerViews();
-        observeState();
         setupClickListeners();
+        setupRefreshLayout();
+        observeState();
+
         viewModel.loadHomepageData();
     }
 
-    private void setupRecyclerViews() {
+    private void observeState() {
+        viewModel.state.observe(getViewLifecycleOwner(), state -> {
+            // binding.progressBar.setVisibility(state.isLoading ? View.VISIBLE : View.GONE);
 
+            if (!state.isLoading) {
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+
+            if (state.topics != null && !state.topics.isEmpty()) {
+                // Chỉ setup ViewPager một lần để tránh tạo lại không cần thiết
+                if (binding.articlesViewPager.getAdapter() == null) {
+                    setupViewPagerWithTopics(state.topics);
+                }
+            }
+
+            if (state.trendingArticles != null && !state.trendingArticles.isEmpty()) {
+                // Lấy bài viết đầu tiên trong danh sách trending
+                PostDto topTrendingArticle = state.trendingArticles.get(0);
+
+                // Hiển thị card và cập nhật dữ liệu
+                binding.trendingCard.setVisibility(View.VISIBLE);
+                binding.trendingArticleLayout.articleCategory.setText(topTrendingArticle.getTopic().getName());
+                binding.trendingArticleLayout.articleTitle.setText(topTrendingArticle.getTitle());
+                binding.trendingArticleLayout.articleSourceName.setText(topTrendingArticle.getAuthor().getFullName());
+
+                // Load ảnh bằng Glide
+                Glide.with(this)
+                        .load(topTrendingArticle.getCoverImageUrl())
+                        .placeholder(R.drawable.image_placeholder)
+                        .into(binding.trendingArticleLayout.articleImage);
+
+                Glide.with(this)
+                        .load(topTrendingArticle.getAuthor().getAvatarUrl())
+                        .placeholder(R.drawable.image_placeholder)
+                        .into(binding.trendingArticleLayout.articleSourceLogo);
+            }
+        });
     }
 
-    private void observeState() {
+    private void setupViewPagerWithTopics(List<TopicDto> topics) {
+        List<String> tabTitles = new ArrayList<>();
+        tabTitles.add("All");
+        for (TopicDto topic : topics) {
+            tabTitles.add(topic.getName());
+        }
 
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this, topics);
+        binding.articlesViewPager.setAdapter(viewPagerAdapter);
+
+        new TabLayoutMediator(binding.tabLayout, binding.articlesViewPager,
+                (tab, position) -> tab.setText(tabTitles.get(position))
+        ).attach();
     }
 
     private void setupClickListeners() {
-        binding.ivNotification.setOnClickListener(v -> {
-            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment_to_notificationFragment);
-        });
-        binding.seeAll.setOnClickListener(v->{
-            NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment_to_trendingFragment);
-        });
+        binding.ivNotification.setOnClickListener(v ->
+                NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment_to_notificationFragment)
+        );
+
+        binding.seeAll.setOnClickListener(v ->
+                NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment_to_trendingFragment)
+        );
+
+        binding.searchBarLayout.setOnClickListener(v ->
+                NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_homeFragment_to_searchFragment)
+        );
     }
 
     @Override
@@ -126,5 +125,3 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 }
-
-

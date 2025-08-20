@@ -14,26 +14,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ArticleDetailViewModel extends AndroidViewModel {
-
-    // Lớp State để quản lý trạng thái UI
-    public static class DetailState {
-        public final boolean isLoading;
-        public final PostDto article;
-        public final String error;
-
-        public DetailState(boolean isLoading, PostDto article, String error) {
-            this.isLoading = isLoading;
-            this.article = article;
-            this.error = error;
-        }
-    }
+public class DetailViewModel extends AndroidViewModel {
 
     private final ApiService apiService;
     private final MutableLiveData<DetailState> _state = new MutableLiveData<>();
     public LiveData<DetailState> state = _state;
 
-    public ArticleDetailViewModel(@NonNull Application application) {
+    public DetailViewModel(@NonNull Application application) {
         super(application);
         this.apiService = ApiUtils.getApiService(application);
     }

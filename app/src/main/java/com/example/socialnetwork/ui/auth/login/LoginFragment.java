@@ -1,6 +1,5 @@
 package com.example.socialnetwork.ui.auth.login;
-// LoginFragment.java
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.socialnetwork.MainActivity;
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.databinding.FragmentLoginBinding;
-
 
 public class LoginFragment extends Fragment {
 
@@ -35,22 +32,15 @@ public class LoginFragment extends Fragment {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
                 .get(LoginViewModel.class);
 
-        if (viewModel.hasSavedLoginInfo()) {
-            binding.etUsername.setText(viewModel.getSavedUsername());
-            binding.etPassword.setText(viewModel.getSavedPassword());
-            binding.cbRememberMe.setChecked(true);
-        }
-
         setupClickListeners();
         observeState();
-
     }
 
     private void setupClickListeners() {
         binding.btnLogin.setOnClickListener(v -> {
-            String username = binding.etUsername.getText().toString().trim();
+            String emailOrPhone = binding.etUsername.getText().toString().trim();
             String password = binding.etPassword.getText().toString();
-            viewModel.login(username, password);
+            viewModel.login(emailOrPhone, password);
         });
 
         binding.tvSignUp.setOnClickListener(v -> {
@@ -73,26 +63,11 @@ public class LoginFragment extends Fragment {
             }
 
             if (state.isLoginSuccessful) {
-                // **MỚI**: Lưu thông tin đăng nhập nếu CheckBox được chọn
-                if (binding.cbRememberMe.isChecked()) {
-                    String username = binding.etUsername.getText().toString().trim();
-                    String password = binding.etPassword.getText().toString();
-                    viewModel.saveLoginInfo(username, password);
-                }
-
                 Toast.makeText(getContext(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                 NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_homeFragment);
             }
         });
     }
-
-    // Đặt hàm này trong LoginFragment.java
-//    private void navigateToMainApp() {
-//        Intent intent = new Intent(requireActivity(), MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        startActivity(intent);
-//        requireActivity().finish();
-//    }
 
     @Override
     public void onDestroyView() {

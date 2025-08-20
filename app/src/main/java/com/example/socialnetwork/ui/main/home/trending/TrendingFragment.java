@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
-import com.example.socialnetwork.databinding.FragmentTrendingBinding; // Thay bằng package của bạn
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.socialnetwork.databinding.FragmentTrendingBinding;
 
 public class TrendingFragment extends Fragment {
 
@@ -27,33 +31,40 @@ public class TrendingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(TrendingViewModel.class);
+        viewModel = new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
+                .get(TrendingViewModel.class);
 
         setupToolbar();
         setupRecyclerView();
         observeViewModel();
+
+        viewModel.loadTrendingArticles();
     }
 
     private void setupToolbar() {
-        // Xử lý sự kiện nhấn nút back
         binding.toolbar.setNavigationOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigateUp()
         );
-        // Xử lý sự kiện cho context menu (nút 3 chấm)
-        binding.toolbar.setOnMenuItemClickListener(item -> {
-            // if (item.getItemId() == R.id.menu_refresh) { ... }
-            return true;
-        });
     }
 
     private void setupRecyclerView() {
         adapter = new TrendingAdapter();
+        binding.trendingRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.trendingRecyclerView.setAdapter(adapter);
     }
 
     private void observeViewModel() {
-        viewModel.getTrendingArticles().observe(getViewLifecycleOwner(), articles -> {
-            adapter.submitList(articles);
+        viewModel.state.observe(getViewLifecycleOwner(), state -> {
+            // binding.progressBar.setVisibility(state.isLoading ? View.VISIBLE : View.GONE);
+
+            if (state.error != null) {
+                Toast.makeText(getContext(), state.error, Toast.LENGTH_SHORT).show();
+            }
+
+            if (state.articles != null) {
+                adapter.submitList(state.articles);
+            }
         });
     }
 

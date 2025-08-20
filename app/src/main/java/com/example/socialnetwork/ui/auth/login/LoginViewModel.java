@@ -21,42 +21,26 @@ import retrofit2.Response;
 
 public class LoginViewModel extends AndroidViewModel {
 
-    private final AuthApiService authApiService = ApiUtils.getAuthApiService();
+    private final AuthApiService authApiService;
     private final MutableLiveData<LoginState> _state = new MutableLiveData<>(new LoginState(false, false, null));
     public LiveData<LoginState> state = _state;
 
     public LoginViewModel(@NonNull Application application) {
         super(application);
+        this.authApiService = ApiUtils.getAuthApiService(application);
     }
 
-
-    private SharedPreferences getSharedPreferences() {
-        return getApplication().getSharedPreferences("login_prefs", Context.MODE_PRIVATE);
+    private SharedPreferences getAuthSharedPreferences() {
+        return getApplication().getSharedPreferences("auth_prefs", Context.MODE_PRIVATE);
     }
 
-    public void saveLoginInfo(String emailOrPhone, String password) {
-        SharedPreferences.Editor editor = getSharedPreferences().edit();
-        editor.putString("emailOrPhone", emailOrPhone);
-        editor.putString("password", password);
+    public void saveToken(String token) {
+        SharedPreferences.Editor editor = getAuthSharedPreferences().edit();
+        editor.putString("auth_token", token);
         editor.apply();
     }
 
-    public boolean hasSavedLoginInfo() {
-        SharedPreferences prefs = getSharedPreferences();
-        return prefs.contains("emailOrPhone") && prefs.contains("password");
-    }
-
-    public String getSavedUsername() {
-        return getSharedPreferences().getString("emailOrPhone", "");
-    }
-
-    public String getSavedPassword() {
-        return getSharedPreferences().getString("password", "");
-    }
-
-
     public void login(String emailOrPhone, String password) {
-
         if (emailOrPhone.isEmpty()) {
             _state.setValue(new LoginState(false, false, "Vui lòng nhập email hoặc số điện thoại."));
             return;
@@ -70,12 +54,9 @@ public class LoginViewModel extends AndroidViewModel {
             return;
         }
 
-
         _state.setValue(new LoginState(true, false, null));
 
-
         LoginRequest loginRequest = new LoginRequest(emailOrPhone, password);
-
 
         authApiService.login(loginRequest).enqueue(new Callback<BaseResponse<LoginResponse>>() {
             @Override
@@ -83,8 +64,8 @@ public class LoginViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     BaseResponse<LoginResponse> baseResponse = response.body();
                     if ("SUCCESS".equalsIgnoreCase(baseResponse.getStatus()) && baseResponse.getData() != null) {
-
-
+                        String token = baseResponse.getData().getAccessToken();
+                        saveToken(token);
                         _state.setValue(new LoginState(false, true, null));
                     } else {
                         String errorMessage = baseResponse.getMessage() != null ? baseResponse.getMessage() : "Thông tin đăng nhập không đúng.";
