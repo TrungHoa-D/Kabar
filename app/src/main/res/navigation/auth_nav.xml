@@ -256,6 +256,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_profileFragment_to_createPostFragment"
+            app:destination="@id/createPostFragment" />
     </fragment>
 
     <fragment
@@ -286,5 +289,11 @@
             android:name="postId"
             app:argType="long" />
     </fragment>
+
+    <fragment
+        android:id="@+id/createPostFragment"
+        android:name="com.example.socialnetwork.ui.main.createpost.CreatePostFragment"
+        android:label="fragment_create_post"
+        tools:layout="@layout/fragment_create_post" />
 
 </navigation>

@@ -9,6 +9,7 @@ import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.TopicDto;
 import com.example.socialnetwork.data.model.dto.UserDto;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.*;
 
@@ -75,5 +76,14 @@ public interface ApiService {
     Call<CommentDto> createComment(
             @Path("postId") long postId,
             @Body CreateCommentRequest request
+    );
+
+    @Multipart
+    @POST("/api/v1/posts")
+    Call<PostDto> createPost(
+            @Query("title") String title,
+            @Query("content") String content,
+            @Query("topicId") long topicId,
+            @Part MultipartBody.Part coverImage
     );
 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.socialnetwork.data.model.dto.BaseResponse;
 import com.example.socialnetwork.data.model.dto.LoginRequest;
 import com.example.socialnetwork.data.model.dto.LoginResponse;
+import com.example.socialnetwork.data.source.local.LoginPrefsManager;
 import com.example.socialnetwork.data.source.local.TokenManager;
 import com.example.socialnetwork.data.source.network.ApiUtils;
 import com.example.socialnetwork.data.source.network.AuthApiService;
@@ -25,21 +26,25 @@ public class LoginViewModel extends AndroidViewModel {
     public LiveData<LoginState> state = _state;
 
     private final TokenManager tokenManager;
+    private final LoginPrefsManager loginPrefsManager;
 
     public LoginViewModel(@NonNull Application application) {
         super(application);
         this.authApiService = ApiUtils.getAuthApiService(application);
         this.tokenManager = new TokenManager(application.getApplicationContext());
+        this.loginPrefsManager = new LoginPrefsManager(application.getApplicationContext());
     }
 
+    public String getRememberedUsername() {
+        return loginPrefsManager.getRememberedUsername();
+    }
 
-    public void login(String emailOrPhone, String password) {
+    public void login(String emailOrPhone, String password, boolean rememberMe) {
         if (emailOrPhone.isEmpty() || password.isEmpty() || password.length() < 6) {
             return;
         }
 
         _state.setValue(new LoginState(true, false, null));
-
         LoginRequest loginRequest = new LoginRequest(emailOrPhone, password);
 
         authApiService.login(loginRequest).enqueue(new Callback<BaseResponse<LoginResponse>>() {
@@ -50,10 +55,14 @@ public class LoginViewModel extends AndroidViewModel {
                     if ("SUCCESS".equalsIgnoreCase(baseResponse.getStatus()) && baseResponse.getData() != null) {
 
                         LoginResponse loginData = baseResponse.getData();
-
                         tokenManager.saveToken(loginData.getAccessToken());
-
                         tokenManager.saveUserId(loginData.getId());
+
+                        if (rememberMe) {
+                            loginPrefsManager.saveUsername(emailOrPhone);
+                        } else {
+                            loginPrefsManager.clearRememberedUsername();
+                        }
 
                         _state.setValue(new LoginState(false, true, null));
                     } else {
@@ -61,7 +70,7 @@ public class LoginViewModel extends AndroidViewModel {
                         _state.setValue(new LoginState(false, false, errorMessage));
                     }
                 } else {
-                    _state.setValue(new LoginState(false, false, "Lỗi máy chủ: " + response.code()));
+                    _state.setValue(new LoginState(false, false, "Tên đăng nhập hoặc mật khẩu không chính xác"));
                 }
             }
 

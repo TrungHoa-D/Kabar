@@ -5,10 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.socialnetwork.R;
@@ -34,20 +36,30 @@ public class LoginFragment extends Fragment {
 
         setupClickListeners();
         observeState();
+        loadRememberedUser();
+    }
+
+    private void loadRememberedUser() {
+        String rememberedUsername = viewModel.getRememberedUsername();
+        if (rememberedUsername != null && !rememberedUsername.isEmpty()) {
+            binding.etUsername.setText(rememberedUsername);
+            binding.cbRememberMe.setChecked(true);
+        }
     }
 
     private void setupClickListeners() {
         binding.btnLogin.setOnClickListener(v -> {
             String emailOrPhone = binding.etUsername.getText().toString().trim();
             String password = binding.etPassword.getText().toString();
-            viewModel.login(emailOrPhone, password);
+            boolean rememberMe = binding.cbRememberMe.isChecked();
+            viewModel.login(emailOrPhone, password, rememberMe);
         });
 
         binding.tvSignUp.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_signUpFragment);
         });
 
-        binding.tvForgotPassword.setOnClickListener(v ->{
+        binding.tvForgotPassword.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_forgotPasswordFragment);
         });
     }
@@ -64,7 +76,11 @@ public class LoginFragment extends Fragment {
 
             if (state.isLoginSuccessful) {
                 Toast.makeText(getContext(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_homeFragment);
+
+                NavOptions navOptions = new NavOptions.Builder()
+                        .setPopUpTo(R.id.loginFragment, true)
+                        .build();
+                NavHostFragment.findNavController(this).navigate(R.id.action_loginFragment_to_homeFragment, null, navOptions);
             }
         });
     }

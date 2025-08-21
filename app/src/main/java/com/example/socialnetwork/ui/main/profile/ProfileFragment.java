@@ -1,4 +1,3 @@
-
 package com.example.socialnetwork.ui.main.profile;
 
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,11 +40,26 @@ public class ProfileFragment extends Fragment implements ArticlesPagerAdapter.On
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
         setupRecyclerView();
+        setupClickListeners();
         observeState();
-        viewModel.loadCurrentUserProfile();
+        NavController navController = NavHostFragment.findNavController(this);
+        navController.getCurrentBackStackEntry().getSavedStateHandle().getLiveData("new_post_created")
+                .observe(getViewLifecycleOwner(), result -> {
+                    if (Boolean.TRUE.equals(result)) {
+                        viewModel.loadCurrentUserProfile();
+                        navController.getCurrentBackStackEntry().getSavedStateHandle().remove("new_post_created");
+                    }
+                });
 
+        viewModel.loadCurrentUserProfile();
+    }
+
+    private void setupClickListeners() {
         binding.ivSettings.setOnClickListener(v -> NavHostFragment.findNavController(this)
                 .navigate(R.id.action_profileFragment_to_settingsFragment));
+
+        binding.fabAddPost.setOnClickListener(v -> NavHostFragment.findNavController(this)
+                .navigate(R.id.action_profileFragment_to_createPostFragment));
     }
 
     private void setupRecyclerView() {
@@ -56,23 +71,22 @@ public class ProfileFragment extends Fragment implements ArticlesPagerAdapter.On
 
     private void observeState() {
         viewModel.state.observe(getViewLifecycleOwner(), state -> {
-
             if (state.error != null) {
                 Toast.makeText(getContext(), state.error, Toast.LENGTH_SHORT).show();
             }
-
             if (state.user != null) {
                 updateUi(state.user);
             }
-
             if (state.posts != null) {
                 articlesAdapter.submitList(state.posts);
+                binding.tvNewsCount.setText(String.valueOf(state.posts.size()));
             }
         });
     }
 
     private void updateUi(UserDto user) {
         binding.tvProfileName.setText(user.getFullName());
+        binding.tvProfileQuote.setText(user.getBio());
         binding.tvFollowersCount.setText(String.valueOf(user.getFollowersCount()));
         binding.tvFollowingCount.setText(String.valueOf(user.getFollowingCount()));
 
