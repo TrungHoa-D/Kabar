@@ -1,9 +1,13 @@
 package com.example.socialnetwork.ui.main.comment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -42,9 +46,23 @@ public class CommentFragment extends Fragment {
 
         setupToolbar();
         setupRecyclerView();
+        setupClickListeners();
         observeState();
 
         viewModel.loadComments(postId);
+    }
+
+    private void setupClickListeners() {
+        binding.btnSend.setOnClickListener(v -> {
+            String content = binding.etComment.getText().toString();
+            if (!content.trim().isEmpty()) {
+                viewModel.postComment(postId, content);
+                binding.etComment.setText("");
+                hideKeyboard();
+            } else {
+                Toast.makeText(getContext(), "Please enter a comment", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -62,8 +80,18 @@ public class CommentFragment extends Fragment {
             if (state.comments != null) {
                 adapter.submitList(state.comments);
             }
-            // Xử lý isLoading và error nếu cần
+            if (state.error != null) {
+                Toast.makeText(getContext(), state.error, Toast.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    private void hideKeyboard() {
+        View view = requireActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     @Override

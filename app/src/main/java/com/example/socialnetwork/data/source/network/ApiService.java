@@ -3,6 +3,7 @@ package com.example.socialnetwork.data.source.network;
 
 import com.example.socialnetwork.data.model.dto.AuthorDto;
 import com.example.socialnetwork.data.model.dto.CommentDto;
+import com.example.socialnetwork.data.model.dto.CreateCommentRequest;
 import com.example.socialnetwork.data.model.dto.PagedResponse;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.TopicDto;
@@ -68,5 +69,11 @@ public interface ApiService {
             @Path("postId") long postId,
             @Query("page") int page,
             @Query("size") int size
+    );
+
+    @POST("/api/v1/posts/{postId}/comments")
+    Call<CommentDto> createComment(
+            @Path("postId") long postId,
+            @Body CreateCommentRequest request
     );
 }

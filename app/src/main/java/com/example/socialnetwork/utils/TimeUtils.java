@@ -7,19 +7,19 @@ import java.time.temporal.ChronoUnit;
 
 public class TimeUtils {
 
-    public static String getTimeAgo(String localTimestamp) {
-        if (localTimestamp == null || localTimestamp.isEmpty()) {
+    public static String getTimeAgo(String utcTimestamp) {
+        if (utcTimestamp == null || utcTimestamp.isEmpty()) {
             return null;
         }
         try {
-            LocalDateTime localDateTime = LocalDateTime.parse(localTimestamp);
+            LocalDateTime localDateTime = LocalDateTime.parse(utcTimestamp);
 
-            ZonedDateTime postTime = localDateTime.atZone(ZoneId.systemDefault());
+            ZonedDateTime postTime = localDateTime.atZone(ZoneId.of("UTC"));
 
             ZonedDateTime now = ZonedDateTime.now();
 
             long seconds = ChronoUnit.SECONDS.between(postTime, now);
-            if (seconds < 60) return seconds + " giây trước";
+            if (seconds < 60) return "vài giây trước";
 
             long minutes = ChronoUnit.MINUTES.between(postTime, now);
             if (minutes < 60) return minutes + " phút trước";
@@ -31,11 +31,17 @@ public class TimeUtils {
             if (days < 7) return days + " ngày trước";
 
             long weeks = ChronoUnit.WEEKS.between(postTime, now);
-            return weeks + " tuần trước";
+            if (weeks < 4) return weeks + " tuần trước";
+
+            long months = ChronoUnit.MONTHS.between(postTime, now);
+            if (months < 12) return months + " tháng trước";
+
+            long years = ChronoUnit.YEARS.between(postTime, now);
+            return years + " năm trước";
 
         } catch (Exception e) {
             e.printStackTrace();
-            return localTimestamp.substring(0, 10);
+            return utcTimestamp.substring(0, 10);
         }
     }
 }
