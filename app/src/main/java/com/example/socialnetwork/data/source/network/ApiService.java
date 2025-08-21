@@ -102,4 +102,7 @@ public interface ApiService {
 
     @DELETE("/api/v1/comments/{commentId}/like")
     Call<Void> unlikeComment(@Path("commentId") long commentId);
+
+    @GET("/api/v1/users/get-by-id/{userId}")
+    Call<UserDto> getUserById(@Path("userId") String userId);
 }

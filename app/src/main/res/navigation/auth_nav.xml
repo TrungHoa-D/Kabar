@@ -194,6 +194,9 @@
         <action
             android:id="@+id/action_searchFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/exploreFragment"
@@ -301,5 +304,18 @@
         android:name="com.example.socialnetwork.ui.main.createpost.CreatePostFragment"
         android:label="fragment_create_post"
         tools:layout="@layout/fragment_create_post" />
+
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.example.socialnetwork.ui.main.profile.UserProfileFragment"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile">
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
 
 </navigation>

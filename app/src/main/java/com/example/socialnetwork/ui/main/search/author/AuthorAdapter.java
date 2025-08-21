@@ -1,8 +1,8 @@
+// filepath: com/example/socialnetwork/ui/main/search/author/AuthorAdapter.java
 package com.example.socialnetwork.ui.main.search.author;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
@@ -13,9 +13,17 @@ import com.example.socialnetwork.R;
 import com.example.socialnetwork.data.model.dto.UserDto;
 import com.example.socialnetwork.databinding.ItemSearchAuthorBinding;
 
-import java.util.Objects;
-
 public class AuthorAdapter extends ListAdapter<UserDto, AuthorAdapter.AuthorViewHolder> {
+    private static final String TAG = "AuthorAdapter";
+
+    public interface OnAuthorClickListener {
+        void onAuthorClick(String userId);
+    }
+    private OnAuthorClickListener onAuthorClickListener;
+
+    public void setOnAuthorClickListener(OnAuthorClickListener listener) {
+        this.onAuthorClickListener = listener;
+    }
 
     public AuthorAdapter() {
         super(DIFF_CALLBACK);
@@ -34,8 +42,13 @@ public class AuthorAdapter extends ListAdapter<UserDto, AuthorAdapter.AuthorView
     public void onBindViewHolder(@NonNull AuthorViewHolder holder, int position) {
         UserDto author = getItem(position);
         holder.bind(author);
-    }
 
+        holder.itemView.setOnClickListener(v -> {
+            if (onAuthorClickListener != null) {
+                onAuthorClickListener.onAuthorClick(author.getId());
+            }
+        });
+    }
 
     static class AuthorViewHolder extends RecyclerView.ViewHolder {
         private final ItemSearchAuthorBinding binding;
