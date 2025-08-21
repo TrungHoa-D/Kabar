@@ -1,6 +1,7 @@
 package com.example.socialnetwork.ui.main.home;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -10,6 +11,7 @@ import com.example.socialnetwork.data.model.dto.PagedResponse;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.source.network.ApiService;
 import com.example.socialnetwork.data.source.network.ApiUtils;
+import com.example.socialnetwork.utils.constant.SortType;
 
 import java.util.List;
 
@@ -19,7 +21,7 @@ import retrofit2.Response;
 
 public class NewsCategoryViewModel extends AndroidViewModel {
 
-    // Lớp State để quản lý trạng thái của UI (loading, success, error)
+
     public static class NewsCategoryState {
         public final boolean isLoading;
         public final List<PostDto> articles;
@@ -46,10 +48,10 @@ public class NewsCategoryViewModel extends AndroidViewModel {
 
         Call<PagedResponse<PostDto>> apiCall;
 
-        if (topicId == -1L) { // Sử dụng -1L làm giá trị đặc biệt cho tab "All"
-            apiCall = apiService.getAllPosts(0, 20); // Lấy tất cả bài viết
+        if (topicId == -1L) {
+            apiCall = apiService.getAllPosts(0, 20, SortType.NEWEST);
         } else {
-            apiCall = apiService.getPostsByTopic(topicId, 0, 20); // Lấy bài viết theo topic
+            apiCall = apiService.getPostsByTopic(topicId, 0, 20, SortType.NEWEST);
         }
 
         apiCall.enqueue(new Callback<PagedResponse<PostDto>>() {

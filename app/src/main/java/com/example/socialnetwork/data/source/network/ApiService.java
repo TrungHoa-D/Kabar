@@ -17,7 +17,8 @@ public interface ApiService {
     @GET("/api/v1/posts")
     Call<PagedResponse<PostDto>> getAllPosts(
             @Query("page") int page,
-            @Query("size") int size
+            @Query("size") int size,
+            @Query("sort") String sort
     );
 
     @GET("/api/v1/topics")
@@ -36,7 +37,8 @@ public interface ApiService {
     Call<PagedResponse<PostDto>> getPostsByTopic(
             @Path("topicId") long topicId,
             @Query("page") int page,
-            @Query("size") int size
+            @Query("size") int size,
+            @Query("sort") String sort
     );
 
     @GET("/api/v1/posts/{postId}")
@@ -49,7 +51,8 @@ public interface ApiService {
     Call<PagedResponse<PostDto>> getPostsByUser(
             @Path("userId") String userId,
             @Query("page") int page,
-            @Query("size") int size
+            @Query("size") int size,
+            @Query("sort") String sort
     );
 
     @GET("/api/v1/posts/{postId}/likes")

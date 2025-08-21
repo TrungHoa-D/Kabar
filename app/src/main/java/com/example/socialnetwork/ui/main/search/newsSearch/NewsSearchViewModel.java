@@ -11,6 +11,7 @@ import com.example.socialnetwork.data.model.dto.PagedResponse;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.source.network.ApiService;
 import com.example.socialnetwork.data.source.network.ApiUtils;
+import com.example.socialnetwork.utils.constant.SortType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class NewsSearchViewModel extends AndroidViewModel {
     }
 
     private void loadInitialPosts() {
-        apiService.getAllPosts(0, 50).enqueue(new Callback<PagedResponse<PostDto>>() {
+        apiService.getAllPosts(0, 100, SortType.NEWEST).enqueue(new Callback<PagedResponse<PostDto>>() {
             @Override
             public void onResponse(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Response<PagedResponse<PostDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {

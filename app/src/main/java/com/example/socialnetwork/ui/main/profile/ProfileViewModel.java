@@ -11,6 +11,7 @@ import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.UserDto;
 import com.example.socialnetwork.data.source.network.ApiService;
 import com.example.socialnetwork.data.source.network.ApiUtils;
+import com.example.socialnetwork.utils.constant.SortType;
 
 import java.util.List;
 
@@ -69,7 +70,7 @@ public class ProfileViewModel extends AndroidViewModel {
     }
 
     private void fetchUserPosts(String userId) {
-        apiService.getPostsByUser(userId, 0, 20).enqueue(new Callback<PagedResponse<PostDto>>() {
+        apiService.getPostsByUser(userId, 0, 20, SortType.NEWEST).enqueue(new Callback<PagedResponse<PostDto>>() {
             @Override
             public void onResponse(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Response<PagedResponse<PostDto>> response) {
                 UserDto currentUser = _state.getValue() != null ? _state.getValue().user : null;

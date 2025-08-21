@@ -11,6 +11,7 @@ import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.TopicDto;
 import com.example.socialnetwork.data.source.network.ApiService;
 import com.example.socialnetwork.data.source.network.ApiUtils;
+import com.example.socialnetwork.utils.constant.SortType;
 
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class ExploreViewModel extends AndroidViewModel {
     }
 
     private void fetchPopularPosts() {
-        apiService.getAllPosts(0, 10).enqueue(new Callback<PagedResponse<PostDto>>() {
+        apiService.getAllPosts(0, 10, SortType.NEWEST).enqueue(new Callback<PagedResponse<PostDto>>() {
             @Override
             public void onResponse(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Response<PagedResponse<PostDto>> response) {
                 ExploreState currentState = _state.getValue();

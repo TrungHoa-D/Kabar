@@ -61,7 +61,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void fetchTrendingPosts() {
-        apiService.getPostById(122).enqueue(new Callback<>() {
+        apiService.getPostById(180).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<PostDto> call, @NonNull Response<PostDto> response) {
                 HomeState currentState = _state.getValue();
