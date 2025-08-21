@@ -246,9 +246,11 @@
         <action
             android:id="@+id/action_profileFragment_to_exploreFragment"
             app:destination="@id/exploreFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
 
-    <!-- **MỚI**: Khai báo DetailFragment -->
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.socialnetwork.ui.main.details.DetailFragment"
@@ -258,5 +260,11 @@
             android:name="postId"
             app:argType="long" />
     </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.socialnetwork.ui.main.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 
 </navigation>

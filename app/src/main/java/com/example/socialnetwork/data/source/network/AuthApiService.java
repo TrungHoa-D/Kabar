@@ -14,4 +14,6 @@ public interface AuthApiService {
     Call<BaseResponse<LoginResponse>> login(@Body LoginRequest loginRequest);
     @POST("/api/v1/auth/register")
     Call<BaseResponse<Object>> register(@Body SignUpRequest signUpRequest);
+    @POST("/api/v1/auth/logout")
+    Call<Void> logout();
 }

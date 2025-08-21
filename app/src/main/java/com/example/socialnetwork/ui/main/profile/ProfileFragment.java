@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
@@ -47,6 +48,8 @@ public class ProfileFragment extends Fragment {
         articlesAdapter = new ArticlesPagerAdapter(this);
         binding.rvUserPosts.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvUserPosts.setAdapter(articlesAdapter);
+        binding.ivSettings.setOnClickListener(v -> NavHostFragment.findNavController(this)
+                .navigate(R.id.action_profileFragment_to_settingsFragment));
     }
 
     private void observeState() {
