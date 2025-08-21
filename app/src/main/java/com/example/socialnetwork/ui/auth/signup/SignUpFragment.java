@@ -1,4 +1,5 @@
 package com.example.socialnetwork.ui.auth.signup;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,8 +37,11 @@ public class SignUpFragment extends Fragment {
     private void setupClickListeners() {
         binding.btnSignUp.setOnClickListener(v -> {
             String username = binding.etUsername.getText().toString().trim();
+            String email = binding.etEmail.getText().toString().trim();
+            String fullName = binding.etFullName.getText().toString().trim();
             String password = binding.etPassword.getText().toString();
-            viewModel.signUp(username, password);
+
+            viewModel.signUp(username, email, password, fullName);
         });
 
         binding.tvLogin.setOnClickListener(v -> {
