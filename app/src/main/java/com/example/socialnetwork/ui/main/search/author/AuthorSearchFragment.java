@@ -57,4 +57,9 @@ public class AuthorSearchFragment extends Fragment implements AuthorAdapter.OnAu
         NavDirections action = SearchFragmentDirections.actionSearchFragmentToUserProfileFragment(userId);
         NavHostFragment.findNavController(requireParentFragment()).navigate(action);
     }
+
+    @Override
+    public void onFollowClick(String userId) {
+        authorViewModel.toggleFollow(userId);
+    }
 }

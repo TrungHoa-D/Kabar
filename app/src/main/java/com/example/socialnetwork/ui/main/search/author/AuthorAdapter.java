@@ -1,9 +1,11 @@
-// filepath: com/example/socialnetwork/ui/main/search/author/AuthorAdapter.java
 package com.example.socialnetwork.ui.main.search.author;
 
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,11 +16,13 @@ import com.example.socialnetwork.data.model.dto.UserDto;
 import com.example.socialnetwork.databinding.ItemSearchAuthorBinding;
 
 public class AuthorAdapter extends ListAdapter<UserDto, AuthorAdapter.AuthorViewHolder> {
-    private static final String TAG = "AuthorAdapter";
 
     public interface OnAuthorClickListener {
         void onAuthorClick(String userId);
+
+        void onFollowClick(String userId);
     }
+
     private OnAuthorClickListener onAuthorClickListener;
 
     public void setOnAuthorClickListener(OnAuthorClickListener listener) {
@@ -41,11 +45,19 @@ public class AuthorAdapter extends ListAdapter<UserDto, AuthorAdapter.AuthorView
     @Override
     public void onBindViewHolder(@NonNull AuthorViewHolder holder, int position) {
         UserDto author = getItem(position);
+        if (author == null) return;
+
         holder.bind(author);
 
         holder.itemView.setOnClickListener(v -> {
             if (onAuthorClickListener != null) {
                 onAuthorClickListener.onAuthorClick(author.getId());
+            }
+        });
+
+        holder.binding.btnFollow.setOnClickListener(v -> {
+            if (onAuthorClickListener != null) {
+                onAuthorClickListener.onFollowClick(author.getId());
             }
         });
     }
@@ -68,6 +80,18 @@ public class AuthorAdapter extends ListAdapter<UserDto, AuthorAdapter.AuthorView
                     .placeholder(R.drawable.avatar_default_svgrepo_com)
                     .circleCrop()
                     .into(binding.ivTopicImage);
+
+            updateFollowButton(author.isFollowed());
+        }
+
+        private void updateFollowButton(boolean isFollowed) {
+            if (isFollowed) {
+                binding.btnFollow.setText("Following");
+                binding.btnFollow.setStrokeWidth(0);
+            } else {
+                binding.btnFollow.setText("Follow");
+                binding.btnFollow.setStrokeWidth(0);
+            }
         }
     }
 
@@ -79,8 +103,9 @@ public class AuthorAdapter extends ListAdapter<UserDto, AuthorAdapter.AuthorView
 
         @Override
         public boolean areContentsTheSame(@NonNull UserDto oldItem, @NonNull UserDto newItem) {
-            return oldItem.getFullName().equals(newItem.getFullName()) &&
-                    oldItem.getFollowersCount() == newItem.getFollowersCount();
+            return oldItem.getId().equals(newItem.getId()) &&
+                    oldItem.getFollowersCount() == newItem.getFollowersCount() &&
+                    oldItem.isFollowed() == newItem.isFollowed();
         }
     };
 }

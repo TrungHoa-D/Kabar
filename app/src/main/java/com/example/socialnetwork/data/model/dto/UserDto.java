@@ -24,9 +24,28 @@ public class UserDto {
     @SerializedName("followingCount")
     private int followingCount;
 
+    private boolean isFollowed;
+
+    public boolean isFollowed() {
+        return isFollowed;
+    }
+
+    public void setFollowed(boolean followed) {
+        isFollowed = followed;
+    }
+
     // Getters
     public String getId() { return id; }
     public String getFullName() { return fullName; }
+
+    public void setFollowersCount(int followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
+    }
+
     public String getAvatarUrl() { return avatarUrl; }
     public String getBio() { return bio; }
     public String getWebsiteUrl() { return websiteUrl; }

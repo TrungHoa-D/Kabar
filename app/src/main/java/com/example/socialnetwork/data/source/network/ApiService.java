@@ -9,6 +9,8 @@ import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.TopicDto;
 import com.example.socialnetwork.data.model.dto.UserDto;
 
+import java.util.List;
+
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -105,4 +107,13 @@ public interface ApiService {
 
     @GET("/api/v1/users/get-by-id/{userId}")
     Call<UserDto> getUserById(@Path("userId") String userId);
+
+    @GET("api/v1/users/me/following")
+    Call<List<UserDto>> getFollowingUsers();
+
+    @POST("api/v1/users/{userId}/follow")
+    Call<Void> followUser(@Path("userId") String userId);
+
+    @DELETE("api/v1/users/{userId}/unfollow")
+    Call<Void> unfollowUser(@Path("userId") String userId);
 }

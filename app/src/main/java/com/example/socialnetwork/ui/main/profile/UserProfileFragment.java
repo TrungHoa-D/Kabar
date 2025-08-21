@@ -1,4 +1,3 @@
-// filepath: com/example/socialnetwork/ui/main/profile/UserProfileFragment.java
 package com.example.socialnetwork.ui.main.profile;
 
 import android.os.Bundle;
@@ -6,20 +5,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.bumptech.glide.Glide;
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.data.model.dto.UserDto;
+import com.example.socialnetwork.data.source.local.TokenManager;
 import com.example.socialnetwork.databinding.FragmentUserProfileBinding;
 import com.example.socialnetwork.ui.main.home.adapter.ArticlesPagerAdapter;
+import com.google.android.material.button.MaterialButton;
 
 public class UserProfileFragment extends Fragment implements ArticlesPagerAdapter.OnPostClickListener {
 
@@ -27,11 +27,12 @@ public class UserProfileFragment extends Fragment implements ArticlesPagerAdapte
     private UserProfileViewModel viewModel;
     private ArticlesPagerAdapter articlesAdapter;
     private String userId;
+    private TokenManager tokenManager;
+    private UserDto currentUser;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Lấy userId từ arguments được truyền qua navigation
         if (getArguments() != null) {
             userId = UserProfileFragmentArgs.fromBundle(getArguments()).getUserId();
         }
@@ -47,13 +48,22 @@ public class UserProfileFragment extends Fragment implements ArticlesPagerAdapte
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(UserProfileViewModel.class);
+        tokenManager = new TokenManager(requireContext());
 
         setupToolbar();
         setupRecyclerView();
         observeState();
+        setupClickListeners();
 
-        // Bắt đầu tải dữ liệu profile của user này
         viewModel.loadUserProfile(userId);
+    }
+
+    private void setupClickListeners() {
+        binding.btnFollow.setOnClickListener(v -> {
+            if (currentUser != null) {
+                viewModel.toggleFollow(currentUser);
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -73,6 +83,7 @@ public class UserProfileFragment extends Fragment implements ArticlesPagerAdapte
                 Toast.makeText(getContext(), state.error, Toast.LENGTH_SHORT).show();
             }
             if (state.user != null) {
+                currentUser = state.user;
                 updateUi(state.user);
             }
             if (state.posts != null) {
@@ -93,6 +104,28 @@ public class UserProfileFragment extends Fragment implements ArticlesPagerAdapte
                 .placeholder(R.drawable.avatar_default_svgrepo_com)
                 .circleCrop()
                 .into(binding.ivProfileAvatar);
+
+        String currentLoginUserId = tokenManager.getCurrentUserId();
+        if (currentLoginUserId != null && currentLoginUserId.equals(user.getId())) {
+            binding.btnFollow.setVisibility(View.GONE);
+        } else {
+            binding.btnFollow.setVisibility(View.VISIBLE);
+            updateFollowButton(user.isFollowed());
+        }
+    }
+
+    private void updateFollowButton(boolean isFollowed) {
+        if (isFollowed) {
+            binding.btnFollow.setText("Following");
+            ((MaterialButton)binding.btnFollow).setIcon(null);
+            binding.btnFollow.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_light_surfaceVariant));
+            binding.btnFollow.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_light_onSurfaceVariant));
+
+        } else {
+            binding.btnFollow.setText("Follow");
+            binding.btnFollow.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue));
+            binding.btnFollow.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+        }
     }
 
     @Override
