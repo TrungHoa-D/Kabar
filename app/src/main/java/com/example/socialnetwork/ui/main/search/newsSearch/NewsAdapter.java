@@ -15,6 +15,16 @@ import com.example.socialnetwork.utils.TimeUtils;
 
 public class NewsAdapter extends ListAdapter<PostDto, NewsAdapter.NewsViewHolder> {
 
+    public interface OnPostClickListener {
+        void onPostClick(long postId);
+    }
+
+    private OnPostClickListener onPostClickListener;
+
+    public void setOnPostClickListener(OnPostClickListener listener) {
+        this.onPostClickListener = listener;
+    }
+
     public NewsAdapter() {
         super(DIFF_CALLBACK);
     }
@@ -32,6 +42,12 @@ public class NewsAdapter extends ListAdapter<PostDto, NewsAdapter.NewsViewHolder
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         PostDto article = getItem(position);
         holder.bind(article);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onPostClickListener != null) {
+                onPostClickListener.onPostClick(article.getId());
+            }
+        });
     }
 
 

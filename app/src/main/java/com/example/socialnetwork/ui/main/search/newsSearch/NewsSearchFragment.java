@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,9 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.socialnetwork.R;
+import com.example.socialnetwork.ui.main.search.SearchFragmentDirections;
 import com.example.socialnetwork.ui.main.search.SearchViewModel;
 
-public class NewsSearchFragment extends Fragment {
+public class NewsSearchFragment extends Fragment implements NewsAdapter.OnPostClickListener {
 
     private NewsSearchViewModel newsViewModel;
     private SearchViewModel sharedViewModel;
@@ -30,6 +33,7 @@ public class NewsSearchFragment extends Fragment {
         rvNewsArticles = view.findViewById(R.id.rv_news_articles);
         rvNewsArticles.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new NewsAdapter();
+        adapter.setOnPostClickListener(this);
         rvNewsArticles.setAdapter(adapter);
         return view;
     }
@@ -39,7 +43,6 @@ public class NewsSearchFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         newsViewModel = new ViewModelProvider(this).get(NewsSearchViewModel.class);
-
         sharedViewModel = new ViewModelProvider(requireParentFragment()).get(SearchViewModel.class);
 
         newsViewModel.getFilteredPosts().observe(getViewLifecycleOwner(), posts -> {
@@ -49,5 +52,11 @@ public class NewsSearchFragment extends Fragment {
         sharedViewModel.getSearchQuery().observe(getViewLifecycleOwner(), query -> {
             newsViewModel.filter(query);
         });
+    }
+
+    @Override
+    public void onPostClick(long postId) {
+        NavDirections action = SearchFragmentDirections.actionSearchFragmentToDetailFragment(postId);
+        NavHostFragment.findNavController(requireParentFragment()).navigate(action);
     }
 }

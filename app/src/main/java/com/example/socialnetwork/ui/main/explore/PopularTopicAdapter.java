@@ -2,6 +2,7 @@ package com.example.socialnetwork.ui.main.explore;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
@@ -15,6 +16,16 @@ import com.example.socialnetwork.utils.TimeUtils;
 import java.util.Objects;
 
 public class PopularTopicAdapter extends ListAdapter<PostDto, PopularTopicAdapter.ArticleViewHolder> {
+
+    public interface OnPostClickListener {
+        void onPostClick(long postId);
+    }
+
+    private OnPostClickListener onPostClickListener;
+
+    public void setOnPostClickListener(OnPostClickListener listener) {
+        this.onPostClickListener = listener;
+    }
 
     public PopularTopicAdapter() {
         super(DIFF_CALLBACK);
@@ -32,6 +43,12 @@ public class PopularTopicAdapter extends ListAdapter<PostDto, PopularTopicAdapte
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         PostDto article = getItem(position);
         holder.bind(article);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onPostClickListener != null) {
+                onPostClickListener.onPostClick(article.getId());
+            }
+        });
     }
 
     static class ArticleViewHolder extends RecyclerView.ViewHolder {
