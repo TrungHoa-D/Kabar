@@ -10,16 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.socialnetwork.databinding.FragmentTrendingBinding;
+import com.example.socialnetwork.ui.main.home.adapter.ArticlesPagerAdapter;
 
-public class TrendingFragment extends Fragment {
+public class TrendingFragment extends Fragment implements ArticlesPagerAdapter.OnPostClickListener {
 
     private FragmentTrendingBinding binding;
     private TrendingViewModel viewModel;
-    private TrendingAdapter adapter;
+    private ArticlesPagerAdapter adapter;
 
     @Nullable
     @Override
@@ -31,32 +33,32 @@ public class TrendingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel = new ViewModelProvider(this,
-                ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().getApplication()))
-                .get(TrendingViewModel.class);
+        viewModel = new ViewModelProvider(this).get(TrendingViewModel.class);
 
         setupToolbar();
         setupRecyclerView();
-        observeViewModel();
+        observeState();
 
         viewModel.loadTrendingArticles();
     }
 
     private void setupToolbar() {
-        binding.toolbar.setNavigationOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigateUp()
-        );
+        binding.toolbar.setNavigationOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigateUp();
+        });
     }
 
     private void setupRecyclerView() {
-        adapter = new TrendingAdapter();
-        binding.trendingRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.trendingRecyclerView.setAdapter(adapter);
+        binding.recyclerViewTrending.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new ArticlesPagerAdapter();
+
+        adapter.setOnPostClickListener(this);
+
+        binding.recyclerViewTrending.setAdapter(adapter);
     }
 
-    private void observeViewModel() {
+    private void observeState() {
         viewModel.state.observe(getViewLifecycleOwner(), state -> {
-            // binding.progressBar.setVisibility(state.isLoading ? View.VISIBLE : View.GONE);
 
             if (state.error != null) {
                 Toast.makeText(getContext(), state.error, Toast.LENGTH_SHORT).show();
@@ -72,5 +74,11 @@ public class TrendingFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onPostClick(long postId) {
+        NavDirections action = TrendingFragmentDirections.actionTrendingFragmentToDetailFragment(postId);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 }

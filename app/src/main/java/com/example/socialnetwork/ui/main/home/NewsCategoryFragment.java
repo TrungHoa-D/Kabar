@@ -4,24 +4,26 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.socialnetwork.databinding.FragmentNewsCategoryBinding;
 import com.example.socialnetwork.ui.main.home.adapter.ArticlesPagerAdapter;
 
-public class NewsCategoryFragment extends Fragment {
+public class NewsCategoryFragment extends Fragment implements ArticlesPagerAdapter.OnPostClickListener {
 
     private FragmentNewsCategoryBinding binding;
     private NewsCategoryViewModel viewModel;
     private ArticlesPagerAdapter adapter;
     private static final String ARG_TOPIC_ID = "topic_id";
-    private static final long ALL_TOPICS_ID = -1L; // Giá trị đặc biệt cho tab "All"
+    private static final long ALL_TOPICS_ID = -1L;
 
-    // Hàm tạo fragment cho tab "All"
     public static NewsCategoryFragment newInstanceForAll() {
         NewsCategoryFragment fragment = new NewsCategoryFragment();
         Bundle args = new Bundle();
@@ -30,7 +32,6 @@ public class NewsCategoryFragment extends Fragment {
         return fragment;
     }
 
-    // Hàm tạo fragment cho một topic cụ thể
     public static NewsCategoryFragment newInstanceForTopic(long topicId) {
         NewsCategoryFragment fragment = new NewsCategoryFragment();
         Bundle args = new Bundle();
@@ -50,13 +51,11 @@ public class NewsCategoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Khởi tạo ViewModel
         viewModel = new ViewModelProvider(this).get(NewsCategoryViewModel.class);
 
         setupRecyclerView();
         observeState();
 
-        // Lấy topicId từ arguments và gọi API
         if (getArguments() != null) {
             long topicId = getArguments().getLong(ARG_TOPIC_ID);
             viewModel.loadArticles(topicId);
@@ -65,17 +64,16 @@ public class NewsCategoryFragment extends Fragment {
 
     private void setupRecyclerView() {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ArticlesPagerAdapter(getParentFragment());
+        adapter = new ArticlesPagerAdapter();
+        adapter.setOnPostClickListener(this);
         binding.recyclerView.setAdapter(adapter);
     }
 
     private void observeState() {
         viewModel.state.observe(getViewLifecycleOwner(), state -> {
-            // binding.progressBar.setVisibility(state.isLoading ? View.VISIBLE : View.GONE);
-            if (!state.isLoading && state.articles != null) {
-                adapter.setArticles(state.articles);
+            if (state.articles != null) {
+                adapter.submitList(state.articles);
             }
-            // Có thể hiển thị lỗi nếu state.error != null
         });
     }
 
@@ -83,5 +81,11 @@ public class NewsCategoryFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onPostClick(long postId) {
+        NavDirections action = HomeFragmentDirections.actionHomeFragmentToDetailFragment(postId);
+        NavHostFragment.findNavController(getParentFragment()).navigate(action);
     }
 }

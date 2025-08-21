@@ -12,6 +12,7 @@ import com.example.socialnetwork.data.model.dto.TopicDto;
 import com.example.socialnetwork.data.source.network.ApiService;
 import com.example.socialnetwork.data.source.network.ApiUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -36,7 +37,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void fetchTopics() {
-        apiService.getAllTopics(0, 20).enqueue(new Callback<PagedResponse<TopicDto>>() {
+        apiService.getAllTopics(0, 20).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Response<PagedResponse<TopicDto>> response) {
                 HomeState currentState = _state.getValue();
@@ -51,6 +52,7 @@ public class HomeViewModel extends AndroidViewModel {
                     _state.setValue(new HomeState(false, null, null, "Failed to load topics"));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Throwable t) {
                 _state.setValue(new HomeState(false, null, null, "Network Error"));
@@ -59,31 +61,29 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void fetchTrendingPosts() {
-        apiService.getAllPosts(0, 50).enqueue(new Callback<PagedResponse<PostDto>>() {
+        apiService.getPostById(122).enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Response<PagedResponse<PostDto>> response) {
+            public void onResponse(@NonNull Call<PostDto> call, @NonNull Response<PostDto> response) {
                 HomeState currentState = _state.getValue();
                 if (response.isSuccessful() && response.body() != null) {
-                    List<PostDto> posts = response.body().getContent();
-
-                    posts.sort((p1, p2) -> {
-                        int likeCompare = Integer.compare(p2.getLikeCount(), p1.getLikeCount());
-                        if (likeCompare == 0) {
-                            return p2.getCreatedAt().compareTo(p1.getCreatedAt());
-                        }
-                        return likeCompare;
-                    });
-
+                    PostDto singlePost = response.body();
+                    List<PostDto> postList = new ArrayList<>();
+                    postList.add(singlePost);
                     _state.setValue(new HomeState(
                             false,
                             currentState != null ? currentState.topics : null,
-                            posts,
+                            postList,
                             null
                     ));
+                } else {
+                    _state.setValue(new HomeState(false, currentState != null ? currentState.topics : null, null, "Failed to load trending article"));
                 }
             }
+
             @Override
-            public void onFailure(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<PostDto> call, @NonNull Throwable t) {
+                HomeState currentState = _state.getValue();
+                _state.setValue(new HomeState(false, currentState != null ? currentState.topics : null, null, "Network Error"));
             }
         });
     }

@@ -1,6 +1,7 @@
 package com.example.socialnetwork.ui.main.details;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +15,22 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
 import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.data.source.local.TokenManager;
 import com.example.socialnetwork.databinding.FragmentDetailBinding;
+import com.example.socialnetwork.utils.TimeUtils;
 
 public class DetailFragment extends Fragment {
 
     private FragmentDetailBinding binding;
     private DetailViewModel viewModel;
     private long postId;
+    private TokenManager tokenManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            postId = com.example.socialnetwork.ui.main.details.DetailFragmentArgs.fromBundle(getArguments()).getPostId();
+            postId = DetailFragmentArgs.fromBundle(getArguments()).getPostId();
         }
     }
 
@@ -41,7 +45,7 @@ public class DetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(DetailViewModel.class);
-
+        tokenManager = new TokenManager(requireContext());
         setupToolbar();
         observeViewModel();
 
@@ -71,13 +75,24 @@ public class DetailFragment extends Fragment {
 
     private void updateUi(PostDto article) {
         binding.tvAuthorName.setText(article.getAuthor().getFullName());
-        binding.tvPostTime.setText(article.getCreatedAt()); // Cần format lại
         binding.tvCategory.setText(article.getTopic().getName());
         binding.tvTitle.setText(article.getTitle());
         binding.tvContent.setText(article.getContent());
 
+        String timeAgo = TimeUtils.getTimeAgo(article.getCreatedAt());
+        binding.tvPostTime.setText(timeAgo);
+
         Glide.with(this).load(article.getAuthor().getAvatarUrl()).into(binding.ivAuthorAvatar);
         Glide.with(this).load(article.getCoverImageUrl()).into(binding.ivCoverImage);
+
+        String currentUserId = tokenManager.getCurrentUserId();
+        String authorId = article.getAuthor().getId();
+
+        if (currentUserId != null && currentUserId.equals(authorId)) {
+            binding.btnFollow.setVisibility(View.GONE);
+        } else {
+            binding.btnFollow.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

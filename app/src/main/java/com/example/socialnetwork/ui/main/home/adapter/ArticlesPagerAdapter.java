@@ -4,34 +4,32 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavDirections;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.databinding.ItemNewsArticleBinding;
-import com.example.socialnetwork.ui.main.home.HomeFragmentDirections;
+import com.example.socialnetwork.utils.TimeUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
-// Lưu ý: Adapter này nên được chuyển thành ListAdapter với DiffUtil để tối ưu hiệu năng sau này
-public class ArticlesPagerAdapter extends RecyclerView.Adapter<ArticlesPagerAdapter.ArticleViewHolder> {
+public class ArticlesPagerAdapter extends ListAdapter<PostDto, ArticlesPagerAdapter.ArticleViewHolder> {
 
-    private List<PostDto> articles = new ArrayList<>();
-    private final Fragment fragment;
-
-    public ArticlesPagerAdapter(Fragment fragment) {
-        this.fragment = fragment;
+    public interface OnPostClickListener {
+        void onPostClick(long postId);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void setArticles(List<PostDto> articles) {
-        this.articles = articles;
-        notifyDataSetChanged(); // Tạm thời dùng notifyDataSetChanged, sau này nên dùng DiffUtil
+    private OnPostClickListener onPostClickListener;
+
+    public void setOnPostClickListener(OnPostClickListener listener) {
+        this.onPostClickListener = listener;
+    }
+
+    public ArticlesPagerAdapter() {
+        super(DIFF_CALLBACK);
     }
 
     @NonNull
@@ -45,19 +43,14 @@ public class ArticlesPagerAdapter extends RecyclerView.Adapter<ArticlesPagerAdap
 
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
-        PostDto article = articles.get(position);
+        PostDto article = getItem(position);
         holder.bind(article);
 
         holder.itemView.setOnClickListener(v -> {
-            NavDirections action = HomeFragmentDirections
-                    .actionHomeFragmentToDetailFragment(article.getId());
-            NavHostFragment.findNavController(fragment).navigate(action);
+            if (onPostClickListener != null) {
+                onPostClickListener.onPostClick(article.getId());
+            }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return articles.size();
     }
 
     static class ArticleViewHolder extends RecyclerView.ViewHolder {
@@ -68,25 +61,37 @@ public class ArticlesPagerAdapter extends RecyclerView.Adapter<ArticlesPagerAdap
             this.binding = binding;
         }
 
+        @SuppressLint("SetTextI18n")
         public void bind(PostDto article) {
             binding.articleCategory.setText(article.getTopic().getName());
             binding.articleTitle.setText(article.getTitle());
             binding.articleSourceName.setText(article.getAuthor().getFullName());
-            // binding.articleTime.setText("• " + article.getCreatedAt()); // Cần hàm format thời gian
+            String timeAgo = TimeUtils.getTimeAgo(article.getCreatedAt());
+            binding.articleTime.setText("• " + timeAgo);
 
-            // Load ảnh bài viết từ URL
             Glide.with(itemView.getContext())
                     .load(article.getCoverImageUrl())
-                    .placeholder(R.drawable.image_placeholder) // Ảnh chờ
-                    .error(R.drawable.image_placeholder) // Ảnh lỗi
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
                     .into(binding.articleImage);
 
-            // Load logo tác giả từ URL
             Glide.with(itemView.getContext())
                     .load(article.getAuthor().getAvatarUrl())
-                    .placeholder(R.drawable.kabar_home_logo) // Ảnh chờ
-                    .error(R.drawable.image_placeholder) // Ảnh lỗi
+                    .placeholder(R.drawable.kabar_home_logo)
+                    .error(R.drawable.image_placeholder)
                     .into(binding.articleSourceLogo);
         }
     }
+
+    private static final DiffUtil.ItemCallback<PostDto> DIFF_CALLBACK = new DiffUtil.ItemCallback<PostDto>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull PostDto oldItem, @NonNull PostDto newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull PostDto oldItem, @NonNull PostDto newItem) {
+            return Objects.equals(oldItem, newItem);
+        }
+    };
 }

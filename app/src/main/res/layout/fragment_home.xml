@@ -120,9 +120,9 @@
                         android:layout_marginTop="16dp"
                         android:visibility="gone"
                         app:cardCornerRadius="12dp"
+                        app:contentPadding="16dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#E5E7EB"
-                        app:strokeWidth="1dp">
+                        app:cardBackgroundColor="#539fec">
 
                         <include
                             android:id="@+id/trending_article_layout"
