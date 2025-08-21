@@ -1,6 +1,7 @@
 package com.example.socialnetwork.data.source.network;
 
 
+import com.example.socialnetwork.data.model.dto.AuthorDto;
 import com.example.socialnetwork.data.model.dto.PagedResponse;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.TopicDto;
@@ -40,6 +41,13 @@ public interface ApiService {
     @GET("/api/v1/users/{userId}/posts")
     Call<PagedResponse<PostDto>> getPostsByUser(
             @Path("userId") String userId,
+            @Query("page") int page,
+            @Query("size") int size
+    );
+
+    @GET("/api/v1/posts/{postId}/likes")
+    Call<PagedResponse<AuthorDto>> getPostLikes(
+            @Path("postId") long postId,
             @Query("page") int page,
             @Query("size") int size
     );

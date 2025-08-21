@@ -1,7 +1,6 @@
 package com.example.socialnetwork.ui.main.details;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
+import com.example.socialnetwork.R;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.source.local.TokenManager;
 import com.example.socialnetwork.databinding.FragmentDetailBinding;
@@ -70,6 +70,12 @@ public class DetailFragment extends Fragment {
             if (state.article != null) {
                 updateUi(state.article);
             }
+
+            if (state.isLikedByCurrentUser) {
+                binding.ivLike.setImageResource(R.drawable.ic_heart_filled);
+            } else {
+                binding.ivLike.setImageResource(R.drawable.ic_heart_outline);
+            }
         });
     }
 
@@ -78,6 +84,8 @@ public class DetailFragment extends Fragment {
         binding.tvCategory.setText(article.getTopic().getName());
         binding.tvTitle.setText(article.getTitle());
         binding.tvContent.setText(article.getContent());
+        binding.tvLikeCount.setText(String.valueOf(article.getLikeCount()));
+        binding.tvCommentCount.setText(String.valueOf(article.getCommentCount()));
 
         String timeAgo = TimeUtils.getTimeAgo(article.getCreatedAt());
         binding.tvPostTime.setText(timeAgo);
