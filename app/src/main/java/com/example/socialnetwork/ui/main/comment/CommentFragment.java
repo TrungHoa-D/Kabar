@@ -15,9 +15,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.socialnetwork.data.model.dto.CommentDto;
 import com.example.socialnetwork.databinding.FragmentCommentBinding;
 
-public class CommentFragment extends Fragment {
+public class CommentFragment extends Fragment implements CommentAdapter.OnCommentLikeClickListener {
 
     private FragmentCommentBinding binding;
     private CommentViewModel viewModel;
@@ -71,6 +72,7 @@ public class CommentFragment extends Fragment {
 
     private void setupRecyclerView() {
         adapter = new CommentAdapter();
+        adapter.setOnLikeClickListener(this);
         binding.rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvComments.setAdapter(adapter);
     }
@@ -79,6 +81,9 @@ public class CommentFragment extends Fragment {
         viewModel.state.observe(getViewLifecycleOwner(), state -> {
             if (state.comments != null) {
                 adapter.submitList(state.comments);
+            }
+            if (state.likeStatusMap != null) {
+                adapter.setLikeStatusMap(state.likeStatusMap);
             }
             if (state.error != null) {
                 Toast.makeText(getContext(), state.error, Toast.LENGTH_SHORT).show();
@@ -98,5 +103,18 @@ public class CommentFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onLikeClick(CommentDto comment) {
+        CommentViewModel.CommentState currentState = viewModel.state.getValue();
+        if (currentState != null && currentState.likeStatusMap != null) {
+            boolean isCurrentlyLiked = currentState.likeStatusMap.getOrDefault(comment.getId(), false);
+            if (isCurrentlyLiked) {
+                viewModel.unlikeComment(comment.getId());
+            } else {
+                viewModel.likeComment(comment.getId());
+            }
+        }
     }
 }

@@ -89,4 +89,17 @@ public interface ApiService {
             @Query("topicId") long topicId,
             @Part MultipartBody.Part coverImage
     );
+
+    @GET("/api/v1/comments/{commentId}/likes")
+    Call<PagedResponse<AuthorDto>> getCommentLikes(
+            @Path("commentId") long commentId,
+            @Query("page") int page,
+            @Query("size") int size
+    );
+
+    @POST("/api/v1/comments/{commentId}/like")
+    Call<Void> likeComment(@Path("commentId") long commentId);
+
+    @DELETE("/api/v1/comments/{commentId}/like")
+    Call<Void> unlikeComment(@Path("commentId") long commentId);
 }
