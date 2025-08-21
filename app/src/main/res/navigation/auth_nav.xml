@@ -266,6 +266,9 @@
         <argument
             android:name="postId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_detailFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
     </fragment>
 
     <fragment
@@ -273,5 +276,15 @@
         android:name="com.example.socialnetwork.ui.main.settings.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/commentFragment"
+        android:name="com.example.socialnetwork.ui.main.comment.CommentFragment"
+        android:label="fragment_comment"
+        tools:layout="@layout/fragment_comment">
+        <argument
+            android:name="postId"
+            app:argType="long" />
+    </fragment>
 
 </navigation>

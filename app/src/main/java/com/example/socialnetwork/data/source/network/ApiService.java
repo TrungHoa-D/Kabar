@@ -2,6 +2,7 @@ package com.example.socialnetwork.data.source.network;
 
 
 import com.example.socialnetwork.data.model.dto.AuthorDto;
+import com.example.socialnetwork.data.model.dto.CommentDto;
 import com.example.socialnetwork.data.model.dto.PagedResponse;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.TopicDto;
@@ -61,4 +62,11 @@ public interface ApiService {
 
     @DELETE("/api/v1/posts/{postId}/like")
     Call<Void> unlikePost(@Path("postId") long postId);
+
+    @GET("/api/v1/posts/{postId}/comments")
+    Call<PagedResponse<CommentDto>> getCommentsForPost(
+            @Path("postId") long postId,
+            @Query("page") int page,
+            @Query("size") int size
+    );
 }

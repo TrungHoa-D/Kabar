@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.bumptech.glide.Glide;
@@ -62,6 +63,10 @@ public class DetailFragment extends Fragment {
                     viewModel.likePost(postId);
                 }
             }
+        });
+        binding.ivComment.setOnClickListener(v -> {
+            NavDirections action = DetailFragmentDirections.actionDetailFragmentToCommentFragment(postId);
+            NavHostFragment.findNavController(this).navigate(action);
         });
     }
 
