@@ -4,45 +4,38 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.socialnetwork.R;
+import com.example.socialnetwork.data.model.dto.UserDto;
 import com.example.socialnetwork.databinding.ItemSearchAuthorBinding;
 
-import java.util.List;
+import java.util.Objects;
 
-public class AuthorAdapter extends RecyclerView.Adapter<AuthorAdapter.AuthorViewHolder> {
+public class AuthorAdapter extends ListAdapter<UserDto, AuthorAdapter.AuthorViewHolder> {
 
-    private List<Author> authors;
-
-    public AuthorAdapter(List<Author> authors) {
-        this.authors = authors;
-    }
-
-    // Phương thức để cập nhật dữ liệu
-    public void setAuthors(List<Author> authors) {
-        this.authors = authors;
-        notifyDataSetChanged();
+    public AuthorAdapter() {
+        super(DIFF_CALLBACK);
     }
 
     @NonNull
     @Override
     public AuthorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        // Sử dụng lớp binding để inflate layout thay vì View
-        ItemSearchAuthorBinding binding = ItemSearchAuthorBinding.inflate(inflater, parent, false);
+        ItemSearchAuthorBinding binding = ItemSearchAuthorBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false
+        );
         return new AuthorViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull AuthorViewHolder holder, int position) {
-        Author author = authors.get(position);
+        UserDto author = getItem(position);
         holder.bind(author);
     }
 
-    @Override
-    public int getItemCount() {
-        return authors != null ? authors.size() : 0;
-    }
 
     static class AuthorViewHolder extends RecyclerView.ViewHolder {
         private final ItemSearchAuthorBinding binding;
@@ -52,10 +45,29 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorAdapter.AuthorView
             this.binding = binding;
         }
 
-        public void bind(Author author) {
-            binding.tvTopicTitle.setText(author.getName());
-            binding.tvTopicDescription.setText(author.getFollowerCount());
-            binding.ivTopicImage.setImageResource(author.getLogoResource());
+        public void bind(UserDto author) {
+            binding.tvTopicTitle.setText(author.getFullName());
+            String followerText = author.getFollowersCount() + " Followers";
+            binding.tvTopicDescription.setText(followerText);
+
+            Glide.with(itemView.getContext())
+                    .load(author.getAvatarUrl())
+                    .placeholder(R.drawable.avatar_default_svgrepo_com)
+                    .circleCrop()
+                    .into(binding.ivTopicImage);
         }
     }
+
+    private static final DiffUtil.ItemCallback<UserDto> DIFF_CALLBACK = new DiffUtil.ItemCallback<UserDto>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull UserDto oldItem, @NonNull UserDto newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull UserDto oldItem, @NonNull UserDto newItem) {
+            return oldItem.getFullName().equals(newItem.getFullName()) &&
+                    oldItem.getFollowersCount() == newItem.getFollowersCount();
+        }
+    };
 }

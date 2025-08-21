@@ -1,65 +1,69 @@
 package com.example.socialnetwork.ui.main.search.newsSearch;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.socialnetwork.R;
-import com.example.socialnetwork.ui.main.home.model.NewsArticle;
-import com.google.android.material.imageview.ShapeableImageView;
+import com.bumptech.glide.Glide;
+import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.databinding.ItemNewsArticleBinding;
+import com.example.socialnetwork.utils.TimeUtils;
 
-import java.util.List;
+public class NewsAdapter extends ListAdapter<PostDto, NewsAdapter.NewsViewHolder> {
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-
-    private List<NewsArticle> articles;
-
-    public NewsAdapter(List<NewsArticle> articles) {
-        this.articles = articles;
+    public NewsAdapter() {
+        super(DIFF_CALLBACK);
     }
 
     @NonNull
     @Override
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_news_article, parent, false);
-        return new NewsViewHolder(view);
+        ItemNewsArticleBinding binding = ItemNewsArticleBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false
+        );
+        return new NewsViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
-        NewsArticle article = articles.get(position);
-        holder.articleCategory.setText(article.getCategory());
-        holder.articleTitle.setText(article.getTitle());
-        holder.articleImage.setImageResource(article.getImageResId());
-        holder.articleSourceLogo.setImageResource(article.getSourceLogoResId());
-        holder.articleSourceName.setText(article.getSourceName());
-        holder.articleTime.setText(article.getTime());
+        PostDto article = getItem(position);
+        holder.bind(article);
     }
 
-    @Override
-    public int getItemCount() {
-        return articles.size();
-    }
 
     static class NewsViewHolder extends RecyclerView.ViewHolder {
-        ShapeableImageView articleImage;
-        TextView articleCategory, articleTitle, articleSourceName, articleTime;
-        ImageView articleSourceLogo;
+        private final ItemNewsArticleBinding binding;
 
-        public NewsViewHolder(@NonNull View itemView) {
-            super(itemView);
-            articleImage = itemView.findViewById(R.id.articleImage);
-            articleCategory = itemView.findViewById(R.id.articleCategory);
-            articleTitle = itemView.findViewById(R.id.articleTitle);
-            articleSourceLogo = itemView.findViewById(R.id.articleSourceLogo);
-            articleSourceName = itemView.findViewById(R.id.articleSourceName);
-            articleTime = itemView.findViewById(R.id.articleTime);
+        public NewsViewHolder(ItemNewsArticleBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(PostDto article) {
+            binding.articleCategory.setText(article.getTopic().getName());
+            binding.articleTitle.setText(article.getTitle());
+            binding.articleSourceName.setText(article.getAuthor().getFullName());
+            binding.articleTime.setText("• " + TimeUtils.getTimeAgo(article.getCreatedAt()));
+
+            Glide.with(itemView.getContext()).load(article.getCoverImageUrl()).into(binding.articleImage);
+            Glide.with(itemView.getContext()).load(article.getAuthor().getAvatarUrl()).into(binding.articleSourceLogo);
         }
     }
+
+    private static final DiffUtil.ItemCallback<PostDto> DIFF_CALLBACK = new DiffUtil.ItemCallback<PostDto>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull PostDto oldItem, @NonNull PostDto newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull PostDto oldItem, @NonNull PostDto newItem) {
+            return oldItem.getTitle().equals(newItem.getTitle()) &&
+                    oldItem.getLikeCount() == newItem.getLikeCount();
+        }
+    };
 }

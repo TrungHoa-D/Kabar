@@ -23,6 +23,12 @@ public interface ApiService {
             @Query("size") int size
     );
 
+    @GET("/api/v1/users/getAll")
+    Call<PagedResponse<UserDto>> getAllUsers(
+            @Query("page") int page,
+            @Query("size") int size
+    );
+
     @GET("/api/v1/posts/{topicId}/posts")
     Call<PagedResponse<PostDto>> getPostsByTopic(
             @Path("topicId") long topicId,

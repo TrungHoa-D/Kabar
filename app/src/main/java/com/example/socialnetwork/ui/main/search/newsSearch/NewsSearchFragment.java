@@ -15,62 +15,39 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.socialnetwork.R;
-import com.example.socialnetwork.ui.main.home.model.NewsArticle;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.socialnetwork.ui.main.search.SearchViewModel;
 
 public class NewsSearchFragment extends Fragment {
 
-    private NewsSearchViewModel mViewModel;
+    private NewsSearchViewModel newsViewModel;
+    private SearchViewModel sharedViewModel;
     private RecyclerView rvNewsArticles;
-
-    public static NewsSearchFragment newInstance() {
-        return new NewsSearchFragment();
-    }
+    private NewsAdapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news_search, container, false);
         rvNewsArticles = view.findViewById(R.id.rv_news_articles);
         rvNewsArticles.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new NewsAdapter();
+        rvNewsArticles.setAdapter(adapter);
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(NewsSearchViewModel.class);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        // Dữ liệu mẫu
-        List<NewsArticle> articles = new ArrayList<>();
-        articles.add(new NewsArticle(
-                "Europe",
-                "Ukraine's President Zelensky to BBC: Blood money being paid...",
-                R.drawable.sample_zelensky,
-                R.drawable.bbc_logo,
-                "BBC News",
-                "• 14m ago"
-        ));
-        articles.add(new NewsArticle(
-                "Tech",
-                "Google announces new AI breakthrough in language models",
-                R.drawable.eu1,
-                R.drawable.bbc_logo,
-                "TechCrunch",
-                "• 1h ago"
-        ));
-        articles.add(new NewsArticle(
-                "Travel",
-                "Google announces new AI breakthrough in language models",
-                R.drawable.wedding,
-                R.drawable.cnn_logo,
-                "TechCrunch",
-                "• 1h ago"
-        ));
+        newsViewModel = new ViewModelProvider(this).get(NewsSearchViewModel.class);
 
-        NewsAdapter adapter = new NewsAdapter(articles);
-        rvNewsArticles.setAdapter(adapter);
+        sharedViewModel = new ViewModelProvider(requireParentFragment()).get(SearchViewModel.class);
+
+        newsViewModel.getFilteredPosts().observe(getViewLifecycleOwner(), posts -> {
+            adapter.submitList(posts);
+        });
+
+        sharedViewModel.getSearchQuery().observe(getViewLifecycleOwner(), query -> {
+            newsViewModel.filter(query);
+        });
     }
 }

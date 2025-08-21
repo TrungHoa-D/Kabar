@@ -12,18 +12,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.socialnetwork.databinding.FragmentAuthorSearchBinding;
-
-import java.util.ArrayList;
+import com.example.socialnetwork.ui.main.search.SearchViewModel;
 
 public class AuthorSearchFragment extends Fragment {
 
-    private AuthorSearchViewModel mViewModel;
+    private AuthorSearchViewModel authorViewModel;
+    private SearchViewModel sharedViewModel;
     private FragmentAuthorSearchBinding binding;
     private AuthorAdapter adapter;
-
-    public static AuthorSearchFragment newInstance() {
-        return new AuthorSearchFragment();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -32,27 +28,23 @@ public class AuthorSearchFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(AuthorSearchViewModel.class);
+
+        authorViewModel = new ViewModelProvider(this).get(AuthorSearchViewModel.class);
+        sharedViewModel = new ViewModelProvider(requireParentFragment()).get(SearchViewModel.class);
 
         binding.rvAuthors.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        adapter = new AuthorAdapter(new ArrayList<>());
+        adapter = new AuthorAdapter();
         binding.rvAuthors.setAdapter(adapter);
 
-        mViewModel.getAuthors().observe(getViewLifecycleOwner(), authorList -> {
-            adapter.setAuthors(authorList);
+        authorViewModel.getFilteredAuthors().observe(getViewLifecycleOwner(), authorList -> {
+            adapter.submitList(authorList);
         });
 
-        mViewModel.loadAuthors();
+        sharedViewModel.getSearchQuery().observe(getViewLifecycleOwner(), query -> {
+            authorViewModel.filter(query);
+        });
     }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(AuthorSearchViewModel.class);
-        // TODO: Use the ViewModel
-    }
-
 }

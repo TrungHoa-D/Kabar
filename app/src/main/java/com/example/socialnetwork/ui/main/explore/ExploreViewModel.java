@@ -1,110 +1,90 @@
 package com.example.socialnetwork.ui.main.explore;
 
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.socialnetwork.R;
-import com.example.socialnetwork.ui.main.home.model.NewsArticle;
-import com.example.socialnetwork.ui.main.home.trending.Article;
-import com.example.socialnetwork.ui.main.search.topic.Topic;
+import com.example.socialnetwork.data.model.dto.PagedResponse;
+import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.data.model.dto.TopicDto;
+import com.example.socialnetwork.data.source.network.ApiService;
+import com.example.socialnetwork.data.source.network.ApiUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class ExploreViewModel extends ViewModel {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private final MutableLiveData<List<Topic>> topicsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<NewsArticle>> popularTopicsLiveData = new MutableLiveData<>();
+public class ExploreViewModel extends AndroidViewModel {
 
-    public LiveData<List<Topic>> getTopics() {
-        return topicsLiveData;
+    public static class ExploreState {
+        public final boolean isLoading;
+        public final List<TopicDto> topics;
+        public final List<PostDto> popularPosts;
+        public final String error;
+
+        public ExploreState(boolean isLoading, List<TopicDto> topics, List<PostDto> popularPosts, String error) {
+            this.isLoading = isLoading;
+            this.topics = topics;
+            this.popularPosts = popularPosts;
+            this.error = error;
+        }
     }
 
-    public LiveData<List<NewsArticle>> getPopularTopics() {
-        return popularTopicsLiveData;
+    private final ApiService apiService;
+    private final MutableLiveData<ExploreState> _state = new MutableLiveData<>();
+    public LiveData<ExploreState> state = _state;
+
+    public ExploreViewModel(@NonNull Application application) {
+        super(application);
+        this.apiService = ApiUtils.getApiService(application);
     }
 
     public void loadExploreData() {
-        List<Topic> dummyTopics = new ArrayList<>();
-        dummyTopics.add(new Topic("Health", "Latest health news...", R.drawable.health));
-        dummyTopics.add(new Topic("Technology", "Tech innovations...", R.drawable.technology));
-        dummyTopics.add(new Topic("Art", "Explore creative works...", R.drawable.art));
-        topicsLiveData.setValue(dummyTopics);
+        _state.setValue(new ExploreState(true, null, null, null));
 
-//        // Tạo dữ liệu giả cho Popular Topics (Articles)
-//        List<Article> dummyArticles = new ArrayList<>();
-//        dummyArticles.add(new Article(
-//                "1",
-//                "Russian warship: Moskva sinks in Black Sea",
-//                "Europe",
-//                "BBC News",
-//                "https://example.com/article_image.jpg",
-//                "https://example.com/bbc_logo.png",
-//                "4h ago"
-//        ));
-//        dummyArticles.add(new Article(
-//                "2",
-//                "AI development breakthroughs",
-//                "Technology",
-//                "TechCrunch",
-//                "https://example.com/ai_image.jpg",
-//                "https://example.com/techcrunch_logo.png",
-//                "2h ago"
-//        ));
-//        dummyArticles.add(new Article(
-//                "3",
-//                "AI development breakthroughs",
-//                "Technology",
-//                "TechCrunch",
-//                "https://example.com/ai_image.jpg",
-//                "https://example.com/techcrunch_logo.png",
-//                "2h ago"
-//        ));
-        List<NewsArticle> dummyArticles = new ArrayList<>();
+        apiService.getAllTopics(0, 5).enqueue(new Callback<PagedResponse<TopicDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Response<PagedResponse<TopicDto>> response) {
+                if (response.isSuccessful()) {
+                    List<TopicDto> topics = response.body().getContent();
+                    _state.setValue(new ExploreState(true, topics, null, null));
+                    fetchPopularPosts();
+                } else {
+                    _state.setValue(new ExploreState(false, null, null, "Failed to load topics"));
+                }
+            }
 
-        dummyArticles.add(new NewsArticle(
-                "World",
-                "Russian warship: Moskva sinks in Black Sea",
-                R.drawable.eu1,
-                R.drawable.bbc_logo,
-                "BBC News",
-                "4h ago"
-        ));
-        dummyArticles.add(new NewsArticle(
-                "Technology",
-                "AI development breakthroughs",
-                R.drawable.ukraine_president,
-                R.drawable.bbc_logo,
-                "TechCrunch",
-                "2h ago"
-        ));
-        dummyArticles.add(new NewsArticle(
-                "Health",
-                "How to stay healthy in modern life",
-                R.drawable.wedding_big_image,
-                R.drawable.cnn_logo,
-                "CNN",
-                "1h ago"
-        ));
-        dummyArticles.add(new NewsArticle(
-                "Travel",
-                "Tourism booming after pandemic",
-                R.drawable.travel,
-                R.drawable.msn_logo,
-                "National Geographic",
-                "3h ago"
-        ));
-        dummyArticles.add(new NewsArticle(
-                "Lifestyle",
-                "Top tips for a happier life",
-                R.drawable.eu1,
-                R.drawable.bbc_news,
-                "The Guardian",
-                "5h ago"
-        ));
-        popularTopicsLiveData.setValue(dummyArticles);
+            @Override
+            public void onFailure(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Throwable t) {
+                _state.setValue(new ExploreState(false, null, null, "Network Error"));
+            }
+        });
+    }
+
+    private void fetchPopularPosts() {
+        apiService.getAllPosts(0, 10).enqueue(new Callback<PagedResponse<PostDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Response<PagedResponse<PostDto>> response) {
+                ExploreState currentState = _state.getValue();
+                List<TopicDto> topics = (currentState != null) ? currentState.topics : null;
+
+                if (response.isSuccessful()) {
+                    _state.setValue(new ExploreState(false, topics, response.body().getContent(), null));
+                } else {
+                    _state.setValue(new ExploreState(false, topics, null, "Failed to load posts"));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Throwable t) {
+                ExploreState currentState = _state.getValue();
+                List<TopicDto> topics = (currentState != null) ? currentState.topics : null;
+                _state.setValue(new ExploreState(false, topics, null, "Network Error"));
+            }
+        });
     }
 }
