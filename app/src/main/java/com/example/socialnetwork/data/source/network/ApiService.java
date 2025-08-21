@@ -8,9 +8,7 @@ import com.example.socialnetwork.data.model.dto.TopicDto;
 import com.example.socialnetwork.data.model.dto.UserDto;
 
 import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
+import retrofit2.http.*;
 
 public interface ApiService {
     @GET("/api/v1/posts")
@@ -51,4 +49,10 @@ public interface ApiService {
             @Query("page") int page,
             @Query("size") int size
     );
+
+    @POST("/api/v1/posts/{postId}/like")
+    Call<Void> likePost(@Path("postId") long postId);
+
+    @DELETE("/api/v1/posts/{postId}/like")
+    Call<Void> unlikePost(@Path("postId") long postId);
 }

@@ -81,4 +81,48 @@ public class DetailViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void likePost(long postId) {
+        DetailState currentState = _state.getValue();
+        if (currentState == null || currentState.article == null) return;
+
+        PostDto currentArticle = currentState.article;
+        currentArticle.setLikeCount(currentArticle.getLikeCount() + 1);
+        _state.setValue(new DetailState(false, currentArticle, null, true));
+        apiService.likePost(postId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    loadArticleDetail(postId);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                loadArticleDetail(postId);
+            }
+        });
+    }
+
+    public void unlikePost(long postId) {
+        DetailState currentState = _state.getValue();
+        if (currentState == null || currentState.article == null) return;
+
+        PostDto currentArticle = currentState.article;
+        currentArticle.setLikeCount(currentArticle.getLikeCount() - 1);
+        _state.setValue(new DetailState(false, currentArticle, null, false));
+        apiService.unlikePost(postId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!response.isSuccessful()) {
+                    loadArticleDetail(postId);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                loadArticleDetail(postId);
+            }
+        });
+    }
 }

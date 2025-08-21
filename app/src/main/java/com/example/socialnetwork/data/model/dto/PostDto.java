@@ -68,4 +68,8 @@ public class PostDto {
     public int getCommentCount() {
         return commentCount;
     }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
 }

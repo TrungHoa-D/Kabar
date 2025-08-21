@@ -48,8 +48,21 @@ public class DetailFragment extends Fragment {
         tokenManager = new TokenManager(requireContext());
         setupToolbar();
         observeViewModel();
-
+        setupClickListeners();
         viewModel.loadArticleDetail(postId);
+    }
+
+    private void setupClickListeners() {
+        binding.ivLike.setOnClickListener(v -> {
+            DetailState currentState = viewModel.state.getValue();
+            if (currentState != null && currentState.article != null) {
+                if (currentState.isLikedByCurrentUser) {
+                    viewModel.unlikePost(postId);
+                } else {
+                    viewModel.likePost(postId);
+                }
+            }
+        });
     }
 
     private void setupToolbar() {
