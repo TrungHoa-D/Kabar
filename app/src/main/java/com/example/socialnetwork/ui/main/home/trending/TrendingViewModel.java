@@ -1,30 +1,62 @@
-package com.example.socialnetwork.ui.main.home.trending; // Thay bằng package của bạn
+package com.example.socialnetwork.ui.main.home.trending;
 
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-import com.example.socialnetwork.ui.main.home.trending.Article; // Thay bằng package của bạn
-import java.util.ArrayList;
+
+import com.example.socialnetwork.data.model.dto.PagedResponse;
+import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.data.source.network.ApiService;
+import com.example.socialnetwork.data.source.network.ApiUtils;
+import com.example.socialnetwork.utils.constant.SortType;
+
+import java.util.Collections;
 import java.util.List;
 
-public class TrendingViewModel extends ViewModel {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private final MutableLiveData<List<Article>> _trendingArticles = new MutableLiveData<>();
-    public LiveData<List<Article>> getTrendingArticles() {
-        return _trendingArticles;
+public class TrendingViewModel extends AndroidViewModel {
+
+    private final ApiService apiService;
+    private final MutableLiveData<TrendingState> _state = new MutableLiveData<>();
+    public LiveData<TrendingState> state = _state;
+
+    public TrendingViewModel(@NonNull Application application) {
+        super(application);
+        this.apiService = ApiUtils.getApiService(application);
     }
 
-    public TrendingViewModel() {
-        loadTrendingArticles();
-    }
+    public void loadTrendingArticles() {
+        _state.setValue(new TrendingState(true, null, null));
 
-    private void loadTrendingArticles() {
-        // Dữ liệu giả - Thay thế bằng logic gọi API của bạn
-        List<Article> articles = new ArrayList<>();
-        articles.add(new Article("1", "Russian warship: Moskva sinks in Black Sea", "Europe", "url_image_1", "BBC News", "url_logo_bbc", "4h ago"));
-        articles.add(new Article("2", "Ukraine's President Zelensky to BBC: Blood money being paid for Russian oil", "Europe", "url_image_2", "BBC News", "url_logo_bbc", "14m ago"));
-        articles.add(new Article("3", "Her train broke down. Her phone died. And then she met her...", "Travel", "url_image_3", "CNN", "url_logo_cnn", "1 Day ago"));
+        apiService.getAllPosts(0, 50, SortType.NEWEST).enqueue(new Callback<PagedResponse<PostDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Response<PagedResponse<PostDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<PostDto> posts = response.body().getContent();
 
-        _trendingArticles.setValue(articles);
+                    Collections.sort(posts, (p1, p2) -> {
+                        int likeCompare = Integer.compare(p2.getLikeCount(), p1.getLikeCount());
+                        if (likeCompare == 0) {
+                            return p2.getCreatedAt().compareTo(p1.getCreatedAt());
+                        }
+                        return likeCompare;
+                    });
+
+                    _state.setValue(new TrendingState(false, posts, null));
+                } else {
+                    _state.setValue(new TrendingState(false, null, "Failed to load trending articles"));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Throwable t) {
+                _state.setValue(new TrendingState(false, null, "Network Error"));
+            }
+        });
     }
 }

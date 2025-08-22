@@ -1,7 +1,60 @@
 package com.example.socialnetwork.ui.main.details;
 
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
-public class ArticleDetailViewModel extends ViewModel {
-    // TODO: Implement the ViewModel
+import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.data.source.network.ApiService;
+import com.example.socialnetwork.data.source.network.ApiUtils;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ArticleDetailViewModel extends AndroidViewModel {
+
+    // Lớp State để quản lý trạng thái UI
+    public static class DetailState {
+        public final boolean isLoading;
+        public final PostDto article;
+        public final String error;
+
+        public DetailState(boolean isLoading, PostDto article, String error) {
+            this.isLoading = isLoading;
+            this.article = article;
+            this.error = error;
+        }
+    }
+
+    private final ApiService apiService;
+    private final MutableLiveData<DetailState> _state = new MutableLiveData<>();
+    public LiveData<DetailState> state = _state;
+
+    public ArticleDetailViewModel(@NonNull Application application) {
+        super(application);
+        this.apiService = ApiUtils.getApiService(application);
+    }
+
+    public void loadArticleDetail(long postId) {
+        _state.setValue(new DetailState(true, null, null));
+
+        apiService.getPostById(postId).enqueue(new Callback<PostDto>() {
+            @Override
+            public void onResponse(@NonNull Call<PostDto> call, @NonNull Response<PostDto> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    _state.setValue(new DetailState(false, response.body(), null));
+                } else {
+                    _state.setValue(new DetailState(false, null, "Failed to load article"));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PostDto> call, @NonNull Throwable t) {
+                _state.setValue(new DetailState(false, null, "Network Error"));
+            }
+        });
+    }
 }

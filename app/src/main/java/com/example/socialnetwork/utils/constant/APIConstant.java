@@ -1,7 +1,7 @@
 package com.example.socialnetwork.utils.constant;
 
 public final class APIConstant {
-    public static final String BASE_URL = "https://your-api-url.com/";
+    public static final String BASE_URL = "http://43.206.215.49:8080/";
 
     private APIConstant() {
 

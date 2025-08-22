@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,24 +8,20 @@
     android:background="@color/white"
     tools:context=".ui.main.home.trending.TrendingFragment">
 
-    <!-- 1. Thanh tiêu đề (Toolbar) -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:title="Trending"
-        app:titleCentered="true"
         app:navigationIcon="@drawable/back_icon"
-        app:menu="@menu/trending_menu" /> <!-- Menu cho nút 3 chấm -->
+        app:title="Trending"
+        app:titleCentered="true" />
 
-    <!-- 2. RecyclerView để hiển thị danh sách tin tức -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/trendingRecyclerView"
+        android:id="@+id/recycler_view_trending"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:padding="16dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_trending_article" />
+        tools:listitem="@layout/item_news_article" />
 
 </LinearLayout>

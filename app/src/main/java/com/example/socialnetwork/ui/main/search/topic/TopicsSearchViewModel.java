@@ -1,43 +1,66 @@
+
 package com.example.socialnetwork.ui.main.search.topic;
 
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.socialnetwork.R;
+import com.example.socialnetwork.data.model.dto.PagedResponse;
+import com.example.socialnetwork.data.model.dto.TopicDto;
+import com.example.socialnetwork.data.source.network.ApiService;
+import com.example.socialnetwork.data.source.network.ApiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class TopicsSearchViewModel extends ViewModel {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private final MutableLiveData<List<Topic>> topicsLiveData = new MutableLiveData<>();
+public class TopicsSearchViewModel extends AndroidViewModel {
 
-    public TopicsSearchViewModel() {
-        loadTopics();
+    private final ApiService apiService;
+    private List<TopicDto> originalTopics = new ArrayList<>();
+    private final MutableLiveData<List<TopicDto>> filteredTopics = new MutableLiveData<>();
+
+    public LiveData<List<TopicDto>> getFilteredTopics() {
+        return filteredTopics;
     }
 
-    private void loadTopics() {
-        // Fake data, có thể thay bằng API
-        List<Topic> list = new ArrayList<>();
-        list.add(new Topic("Health", "Latest health news...", R.drawable.health));
-        list.add(new Topic("Technology", "Tech innovations...", R.drawable.technology));
-        list.add(new Topic("Travel", "Explore destinations...", R.drawable.travel));
-
-        list.add(new Topic("Art", "The Art Newspaper is the journal of record for...", R.drawable.art));
-
-        list.add(new Topic("Politics", "opinion and analysis of American and global politi...", R.drawable.politics));
-
-        list.add(new Topic("Sport", " Sports news and live sports coverage including scores..", R.drawable.sport));
-
-        list.add(new Topic("Money", "The latest breaking financial news on the US and world...", R.drawable.money));
-
-        topicsLiveData.setValue(list);
+    public TopicsSearchViewModel(@NonNull Application application) {
+        super(application);
+        this.apiService = ApiUtils.getApiService(application);
+        loadInitialTopics();
     }
 
-    public LiveData<List<Topic>> getTopics() {
-        return topicsLiveData;
+    private void loadInitialTopics() {
+        apiService.getAllTopics(0, 50).enqueue(new Callback<PagedResponse<TopicDto>>() {
+            @Override
+            public void onResponse(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Response<PagedResponse<TopicDto>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    originalTopics = response.body().getContent();
+                    filteredTopics.setValue(originalTopics);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    public void filter(String query) {
+        if (query == null || query.isEmpty()) {
+            filteredTopics.setValue(originalTopics);
+        } else {
+            List<TopicDto> result = originalTopics.stream()
+                    .filter(topic -> topic.getName().toLowerCase().contains(query.toLowerCase()))
+                    .collect(Collectors.toList());
+            filteredTopics.setValue(result);
+        }
     }
 }

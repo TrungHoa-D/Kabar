@@ -29,7 +29,7 @@
                android:id="@+id/articleCategory"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:textColor="#6B7280"
+               android:textColor="#374151"
                android:textSize="13sp"
                android:textStyle="bold"
                tools:text="Europe" />
@@ -74,8 +74,7 @@
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:layout_marginStart="8dp"
-                   android:text="• 14m ago"
-                   android:textColor="#6B7280"
+                   tools:text="• 14m ago" android:textColor="#6B7280"
                    android:textSize="12sp" />
 
                <View
@@ -87,7 +86,7 @@
                    android:layout_width="20dp"
                    android:layout_height="20dp"
                    android:src="@drawable/dots"
-                   app:tint="#9CA3AF" />
+                   app:tint="@color/black" />
            </LinearLayout>
        </LinearLayout>
    </LinearLayout>

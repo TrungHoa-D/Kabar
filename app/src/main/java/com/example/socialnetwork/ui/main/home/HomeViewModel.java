@@ -1,80 +1,90 @@
 package com.example.socialnetwork.ui.main.home;
 
-
-import android.os.Handler;
-import android.os.Looper;
-
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.socialnetwork.R;
-import com.example.socialnetwork.ui.main.home.model.NewsArticle;
-import com.example.socialnetwork.ui.main.home.model.NewsCategory;
+import com.example.socialnetwork.data.model.dto.PagedResponse;
+import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.data.model.dto.TopicDto;
+import com.example.socialnetwork.data.source.network.ApiService;
+import com.example.socialnetwork.data.source.network.ApiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeViewModel extends ViewModel {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private final MutableLiveData<HomeState> _state = new MutableLiveData<>(new HomeState(true, null, null, null));
+public class HomeViewModel extends AndroidViewModel {
+
+    private final ApiService apiService;
+    private final MutableLiveData<HomeState> _state = new MutableLiveData<>();
     public LiveData<HomeState> state = _state;
+
+    public HomeViewModel(@NonNull Application application) {
+        super(application);
+        this.apiService = ApiUtils.getApiService(application);
+    }
 
     public void loadHomepageData() {
         _state.setValue(new HomeState(true, null, null, null));
+        fetchTopics();
+        fetchTrendingPosts();
+    }
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // Mock data for categories
-            List<NewsCategory> categories = new ArrayList<>();
-            categories.add(new NewsCategory("Sports", true));
-            categories.add(new NewsCategory("Politics", false));
-            categories.add(new NewsCategory("Life", false));
-            categories.add(new NewsCategory("Gaming", false));
-            categories.add(new NewsCategory("Animals", false));
-            categories.add(new NewsCategory("Nature", false));
+    private void fetchTopics() {
+        apiService.getAllTopics(0, 20).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Response<PagedResponse<TopicDto>> response) {
+                HomeState currentState = _state.getValue();
+                if (response.isSuccessful() && response.body() != null) {
+                    _state.setValue(new HomeState(
+                            false,
+                            response.body().getContent(),
+                            currentState != null ? currentState.trendingArticles : null,
+                            null
+                    ));
+                } else {
+                    _state.setValue(new HomeState(false, null, null, "Failed to load topics"));
+                }
+            }
 
-            // Mock data for articles
-            List<NewsArticle> articles = new ArrayList<>();
+            @Override
+            public void onFailure(@NonNull Call<PagedResponse<TopicDto>> call, @NonNull Throwable t) {
+                _state.setValue(new HomeState(false, null, null, "Network Error"));
+            }
+        });
+    }
 
-            articles.add(new NewsArticle(
-                    "Design",
-                    "UI/UX Design Trends for 2025",
-                    R.drawable.image_placeholder,
-                    R.drawable.bbc_news,
-                    "UX Planet",
-                    "2h ago"
-            ));
+    private void fetchTrendingPosts() {
+        apiService.getPostById(180).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<PostDto> call, @NonNull Response<PostDto> response) {
+                HomeState currentState = _state.getValue();
+                if (response.isSuccessful() && response.body() != null) {
+                    PostDto singlePost = response.body();
+                    List<PostDto> postList = new ArrayList<>();
+                    postList.add(singlePost);
+                    _state.setValue(new HomeState(
+                            false,
+                            currentState != null ? currentState.topics : null,
+                            postList,
+                            null
+                    ));
+                } else {
+                    _state.setValue(new HomeState(false, currentState != null ? currentState.topics : null, null, "Failed to load trending article"));
+                }
+            }
 
-            articles.add(new NewsArticle(
-                    "Business",
-                    "How to Become a Successful Freelancer",
-                    R.drawable.image_placeholder ,
-                    R.drawable.bbc_news,
-                    "Forbes",
-                    "5h ago"
-            ));
-
-            articles.add(new NewsArticle(
-                    "Technology",
-                    "The Future of Artificial Intelligence",
-                    R.drawable.image_placeholder,
-                    R.drawable.bbc_news,
-                    "Wired",
-                    "1d ago"
-            ));
-
-            articles.add(new NewsArticle(
-                    "Health",
-                    "Healthy Breakfast for a Productive Day",
-                    R.drawable.image_placeholder,
-                    R.drawable.bbc_news,
-                    "Healthline",
-                    "3d ago"
-            ));
-
-
-            _state.setValue(new HomeState(false, categories, articles, null));
-
-        }, 1500); // Giả lập độ trễ 1.5 giây
+            @Override
+            public void onFailure(@NonNull Call<PostDto> call, @NonNull Throwable t) {
+                HomeState currentState = _state.getValue();
+                _state.setValue(new HomeState(false, currentState != null ? currentState.topics : null, null, "Network Error"));
+            }
+        });
     }
 }

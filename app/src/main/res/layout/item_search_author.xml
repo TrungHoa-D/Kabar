@@ -1,55 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    android:gravity="center_vertical">
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/iv_topic_image"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:scaleType="centerCrop"
-        tools:src="@tools:sample/backgrounds/scenic"/>
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_topic_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginStart="16dp"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/tv_topic_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            tools:text="Health"/>
-        <TextView
-            android:id="@+id/tv_topic_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:maxLines="2"
-            android:ellipsize="end"
-            tools:text="View the latest health news and explore articles on..."/>
-    </LinearLayout>
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/btn_follow"
+        app:layout_constraintStart_toEndOf="@+id/iv_topic_image"
+        app:layout_constraintTop_toTopOf="@+id/iv_topic_image"
+        tools:text="Author Name" />
+
+    <TextView
+        android:id="@+id/tv_topic_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        app:layout_constraintEnd_toStartOf="@+id/btn_follow"
+        app:layout_constraintStart_toEndOf="@+id/iv_topic_image"
+        app:layout_constraintTop_toBottomOf="@+id/tv_topic_title"
+        tools:text="123k Followers" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_follow"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
         android:text="Follow"
-        android:textColor="#2563EB"
-        android:backgroundTint="@android:color/white"
-        app:strokeColor="#2563EB"
-        app:strokeWidth="1dp"
-        app:cornerRadius="8dp"
-        tools:text="Follow"/>
-</LinearLayout>
+        android:backgroundTint="@color/brand_blue"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,11 +6,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide;
-import com.example.socialnetwork.databinding.ItemTrendingArticleBinding; // Thay bằng package của bạn
-import com.example.socialnetwork.ui.main.home.trending.Article; // Thay bằng package của bạn
 
-public class TrendingAdapter extends ListAdapter<Article, TrendingAdapter.TrendingViewHolder> {
+import com.bumptech.glide.Glide;
+import com.example.socialnetwork.R;
+import com.example.socialnetwork.data.model.dto.PostDto;
+import com.example.socialnetwork.databinding.ItemTrendingArticleBinding;
+
+public class TrendingAdapter extends ListAdapter<PostDto, TrendingAdapter.TrendingViewHolder> {
 
     public TrendingAdapter() {
         super(DIFF_CALLBACK);
@@ -36,25 +38,32 @@ public class TrendingAdapter extends ListAdapter<Article, TrendingAdapter.Trendi
             this.binding = binding;
         }
 
-        void bind(Article article) {
-            binding.tvArticleCategory.setText(article.category);
-            binding.tvArticleTitle.setText(article.title);
-            binding.tvSourceName.setText(article.sourceName);
-            binding.tvTime.setText("• " + article.timeAgo);
+        void bind(PostDto article) {
+            binding.tvArticleCategory.setText(article.getTopic().getName());
+            binding.tvArticleTitle.setText(article.getTitle());
+            binding.tvSourceName.setText(article.getAuthor().getFullName());
+            // binding.tvTime.setText("• " + article.getCreatedAt()); // Cần hàm format thời gian
 
-            Glide.with(itemView.getContext()).load(article.imageUrl).into(binding.ivArticleImage);
-            Glide.with(itemView.getContext()).load(article.sourceLogoUrl).into(binding.ivSourceLogo);
+            Glide.with(itemView.getContext())
+                    .load(article.getCoverImageUrl())
+                    .placeholder(R.drawable.image_placeholder)
+                    .into(binding.ivArticleImage);
+
+            Glide.with(itemView.getContext())
+                    .load(article.getAuthor().getAvatarUrl())
+                    .placeholder(R.drawable.image_placeholder)
+                    .into(binding.ivSourceLogo);
         }
     }
 
-    private static final DiffUtil.ItemCallback<Article> DIFF_CALLBACK = new DiffUtil.ItemCallback<Article>() {
+    private static final DiffUtil.ItemCallback<PostDto> DIFF_CALLBACK = new DiffUtil.ItemCallback<PostDto>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Article oldItem, @NonNull Article newItem) {
-            return oldItem.id.equals(newItem.id);
+        public boolean areItemsTheSame(@NonNull PostDto oldItem, @NonNull PostDto newItem) {
+            return oldItem.getId() == newItem.getId();
         }
         @Override
-        public boolean areContentsTheSame(@NonNull Article oldItem, @NonNull Article newItem) {
-            return oldItem.equals(newItem);
+        public boolean areContentsTheSame(@NonNull PostDto oldItem, @NonNull PostDto newItem) {
+            return oldItem.getTitle().equals(newItem.getTitle()) && oldItem.getLikeCount() == newItem.getLikeCount();
         }
     };
 }
