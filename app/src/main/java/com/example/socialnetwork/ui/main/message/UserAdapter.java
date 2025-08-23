@@ -2,13 +2,17 @@ package com.example.socialnetwork.ui.main.message;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+import com.example.socialnetwork.R;
 import com.example.socialnetwork.data.model.dto.UserDto;
 import com.example.socialnetwork.databinding.ItemUserBinding;
+
 import java.util.Objects;
 
 public class UserAdapter extends ListAdapter<UserDto, UserAdapter.UserViewHolder> {
@@ -47,13 +51,28 @@ public class UserAdapter extends ListAdapter<UserDto, UserAdapter.UserViewHolder
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
         private final ItemUserBinding binding;
+
         public UserViewHolder(@NonNull ItemUserBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
+
         public void bind(UserDto user) {
             binding.tvUserName.setText(user.getFullName());
-            Glide.with(binding.getRoot().getContext()).load(user.getAvatarUrl()).into(binding.ivAvatar);
+
+            String avatarUrl = user.getAvatarUrl();
+
+            if (avatarUrl == null || avatarUrl.isEmpty() || avatarUrl.equals("string")) {
+                Glide.with(binding.getRoot().getContext())
+                        .load(R.drawable.avatar_default_svgrepo_com)
+                        .into(binding.ivAvatar);
+            } else {
+                Glide.with(binding.getRoot().getContext())
+                        .load(avatarUrl)
+                        .placeholder(R.drawable.avatar_default_svgrepo_com)
+                        .error(R.drawable.avatar_default_svgrepo_com)
+                        .into(binding.ivAvatar);
+            }
         }
     }
 
@@ -62,6 +81,7 @@ public class UserAdapter extends ListAdapter<UserDto, UserAdapter.UserViewHolder
         public boolean areItemsTheSame(@NonNull UserDto oldItem, @NonNull UserDto newItem) {
             return Objects.equals(oldItem.getId(), newItem.getId());
         }
+
         @Override
         public boolean areContentsTheSame(@NonNull UserDto oldItem, @NonNull UserDto newItem) {
             return Objects.equals(oldItem, newItem);

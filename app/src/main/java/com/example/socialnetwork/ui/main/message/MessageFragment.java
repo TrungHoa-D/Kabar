@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
@@ -30,9 +32,27 @@ public class MessageFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(MessageViewModel.class);
+
         setupRecyclerView();
-        observeState();
-        viewModel.loadUsers();
+        setupSearchView();
+        observeViewModel();
+
+        viewModel.loadFollowingUsers();
+    }
+
+    private void setupSearchView() {
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                viewModel.filter(newText);
+                return true;
+            }
+        });
     }
 
     private void setupRecyclerView() {
@@ -49,14 +69,20 @@ public class MessageFragment extends Fragment {
         });
     }
 
-    private void observeState() {
-        viewModel.state.observe(getViewLifecycleOwner(), state -> {
-            binding.progressBar.setVisibility(state.isLoading ? View.VISIBLE : View.GONE);
-            if (state.users != null) {
-                userAdapter.submitList(state.users);
+    private void observeViewModel() {
+        viewModel.getFilteredUsers().observe(getViewLifecycleOwner(), users -> {
+            if (users != null) {
+                userAdapter.submitList(users);
             }
-            if (state.error != null) {
-                Snackbar.make(binding.getRoot(), state.error, Snackbar.LENGTH_LONG).show();
+        });
+
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        });
+
+        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Snackbar.make(binding.getRoot(), error, Snackbar.LENGTH_LONG).show();
             }
         });
     }
