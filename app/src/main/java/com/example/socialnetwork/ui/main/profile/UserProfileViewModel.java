@@ -1,19 +1,24 @@
 package com.example.socialnetwork.ui.main.profile;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import com.example.socialnetwork.data.model.dto.PagedResponse;
 import com.example.socialnetwork.data.model.dto.PostDto;
 import com.example.socialnetwork.data.model.dto.UserDto;
 import com.example.socialnetwork.data.source.network.ApiService;
 import com.example.socialnetwork.data.source.network.ApiUtils;
 import com.example.socialnetwork.utils.constant.SortType;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,46 +42,49 @@ public class UserProfileViewModel extends AndroidViewModel {
     private final ApiService apiService;
     private final MutableLiveData<ProfileState> _state = new MutableLiveData<>();
     public LiveData<ProfileState> state = _state;
-    private Set<String> followingIds;
+    private Set<String> followingIds = new HashSet<>();
 
     public UserProfileViewModel(@NonNull Application application) {
         super(application);
         this.apiService = ApiUtils.getApiService(application);
-        fetchFollowingUsers();
     }
 
-    private void fetchFollowingUsers() {
-        apiService.getFollowingUsers().enqueue(new Callback<>() {
+    public void loadUserProfile(String userId) {
+        _state.setValue(new ProfileState(true, null, null, null));
+
+        apiService.getFollowingUsers().enqueue(new Callback<List<UserDto>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserDto>> call, @NonNull Response<List<UserDto>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     followingIds = response.body().stream().map(UserDto::getId).collect(Collectors.toSet());
                 }
+                fetchUserDetails(userId);
             }
+
             @Override
-            public void onFailure(@NonNull Call<List<UserDto>> call, @NonNull Throwable t) {}
+            public void onFailure(@NonNull Call<List<UserDto>> call, @NonNull Throwable t) {
+                fetchUserDetails(userId);
+            }
         });
     }
 
-    public void loadUserProfile(String userId) {
-        _state.setValue(new ProfileState(true, null, null, null));
-        apiService.getUserById(userId).enqueue(new Callback<>() {
+    private void fetchUserDetails(String userId) {
+        apiService.getUserById(userId).enqueue(new Callback<UserDto>() {
             @Override
             public void onResponse(@NonNull Call<UserDto> call, @NonNull Response<UserDto> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     UserDto user = response.body();
-                    if (followingIds != null) {
-                        user.setFollowed(followingIds.contains(user.getId()));
-                    }
+                    user.setFollowed(followingIds.contains(user.getId()));
                     _state.setValue(new ProfileState(true, user, null, null));
                     fetchUserPosts(user.getId());
                 } else {
                     _state.setValue(new ProfileState(false, null, null, "Failed to load profile"));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<UserDto> call, @NonNull Throwable t) {
-                _state.setValue(new ProfileState(false, null, null, "Network Error"));
+                _state.setValue(new ProfileState(false, null, null, "Network Error on getUserById"));
             }
         });
     }
@@ -93,6 +101,7 @@ public class UserProfileViewModel extends AndroidViewModel {
                     _state.setValue(new ProfileState(false, currentUser, null, "Failed to load posts"));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<PagedResponse<PostDto>> call, @NonNull Throwable t) {
                 ProfileState currentState = _state.getValue();
@@ -121,6 +130,7 @@ public class UserProfileViewModel extends AndroidViewModel {
                     followingIds.add(userId);
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 updateOptimisticFollowState(userId, false);
@@ -139,6 +149,7 @@ public class UserProfileViewModel extends AndroidViewModel {
                     followingIds.remove(userId);
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 updateOptimisticFollowState(userId, true);

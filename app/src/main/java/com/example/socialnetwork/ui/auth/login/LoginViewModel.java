@@ -1,6 +1,7 @@
 package com.example.socialnetwork.ui.auth.login;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -14,6 +15,7 @@ import com.example.socialnetwork.data.source.local.LoginPrefsManager;
 import com.example.socialnetwork.data.source.local.TokenManager;
 import com.example.socialnetwork.data.source.network.ApiUtils;
 import com.example.socialnetwork.data.source.network.AuthApiService;
+import com.google.firebase.auth.FirebaseAuth;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,29 +47,39 @@ public class LoginViewModel extends AndroidViewModel {
         }
 
         _state.setValue(new LoginState(true, false, null));
-        LoginRequest loginRequest = new LoginRequest(emailOrPhone, password);
+
+        LoginRequest loginRequest = new LoginRequest(emailOrPhone, password, true);
 
         authApiService.login(loginRequest).enqueue(new Callback<BaseResponse<LoginResponse>>() {
             @Override
             public void onResponse(@NonNull Call<BaseResponse<LoginResponse>> call, @NonNull Response<BaseResponse<LoginResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     BaseResponse<LoginResponse> baseResponse = response.body();
-                    if ("SUCCESS".equalsIgnoreCase(baseResponse.getStatus()) && baseResponse.getData() != null) {
+                    LoginResponse loginData = baseResponse.getData();
 
-                        LoginResponse loginData = baseResponse.getData();
-                        tokenManager.saveToken(loginData.getAccessToken());
-                        tokenManager.saveUserId(loginData.getId());
+                    tokenManager.saveAccessToken(loginData.getAccessToken());
+                    tokenManager.saveUserId(loginData.getUserId());
 
-                        if (rememberMe) {
-                            loginPrefsManager.saveUsername(emailOrPhone);
-                        } else {
-                            loginPrefsManager.clearRememberedUsername();
-                        }
-
-                        _state.setValue(new LoginState(false, true, null));
+                    if (rememberMe) {
+                        loginPrefsManager.saveUsername(emailOrPhone);
                     } else {
-                        String errorMessage = baseResponse.getMessage() != null ? baseResponse.getMessage() : "Thông tin đăng nhập không đúng.";
-                        _state.setValue(new LoginState(false, false, errorMessage));
+                        loginPrefsManager.clearRememberedUsername();
+                    }
+
+                    String customFirebaseToken = loginData.getFirebaseToken();
+                    if (customFirebaseToken != null && !customFirebaseToken.isEmpty()) {
+                        FirebaseAuth.getInstance().signInWithCustomToken(customFirebaseToken)
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Log.d("LoginViewModel", "Firebase sign-in successful.");
+                                        _state.setValue(new LoginState(false, true, null));
+                                    } else {
+                                        Log.e("LoginViewModel", "Firebase sign-in failed.", task.getException());
+                                        _state.setValue(new LoginState(false, false, "Lỗi xác thực Firebase."));
+                                    }
+                                });
+                    } else {
+                        _state.setValue(new LoginState(false, false, "Không nhận được token Firebase từ server."));
                     }
                 } else {
                     _state.setValue(new LoginState(false, false, "Tên đăng nhập hoặc mật khẩu không chính xác"));

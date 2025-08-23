@@ -9,8 +9,12 @@ public class LoginRequest {
     @SerializedName("password")
     private String password;
 
-    public LoginRequest(String emailOrPhone, String password) {
+    @SerializedName("firebaseLogin")
+    private boolean firebaseLogin;
+
+    public LoginRequest(String emailOrPhone, String password, boolean firebaseLogin) {
         this.emailOrPhone = emailOrPhone;
         this.password = password;
+        this.firebaseLogin = firebaseLogin;
     }
 }
