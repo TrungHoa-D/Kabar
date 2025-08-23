@@ -228,7 +228,7 @@
             android:name="receiverName"
             app:argType="string" />
         <argument
-            android:name="receiverAvatar"
+            android:name="receiverAvatarUrl"
             app:argType="string"
             app:nullable="true" />
     </fragment>

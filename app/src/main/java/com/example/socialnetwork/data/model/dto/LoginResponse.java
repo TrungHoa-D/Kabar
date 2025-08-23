@@ -4,22 +4,22 @@ import com.google.gson.annotations.SerializedName;
 
 public class LoginResponse {
 
-    @SerializedName("tokenType")
-    private String tokenType;
-
     @SerializedName("accessToken")
     private String accessToken;
 
     @SerializedName("refreshToken")
     private String refreshToken;
 
-    @SerializedName("id")
-    private String id;
-    // --- Getters ---
+    @SerializedName("firebaseToken")
+    private String firebaseToken;
 
-    public String getTokenType() {
-        return tokenType;
-    }
+    @SerializedName("user")
+    private UserDto user;
+
+    @SerializedName("userId")
+    private String userId;
+
+    // --- Getters ---
 
     public String getAccessToken() {
         return accessToken;
@@ -29,7 +29,15 @@ public class LoginResponse {
         return refreshToken;
     }
 
-    public String getId() {
-        return id;
+    public String getFirebaseToken() {
+        return firebaseToken;
+    }
+
+    public UserDto getUser() {
+        return user;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 }

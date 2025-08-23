@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.socialnetwork.databinding.ActivityMainBinding;
+import com.google.firebase.FirebaseApp;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -49,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
                     destination.getId() == R.id.searchFragment ||
                     destination.getId() == R.id.detailFragment ||
                     destination.getId() == R.id.commentFragment ||
-                    destination.getId() == R.id.userProfileFragment
+                    destination.getId() == R.id.userProfileFragment ||
+                    destination.getId() == R.id.chatFragment
             ) {
                 binding.bottomNavigationView.setVisibility(View.GONE);
             } else {
