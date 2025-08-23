@@ -18,6 +18,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.databinding.FragmentHomeBinding;
+import com.example.socialnetwork.ui.main.details.ArticleDetailFragment;
 import com.example.socialnetwork.ui.main.home.adapter.ArticlesPagerAdapter;
 import com.example.socialnetwork.ui.main.home.adapter.ViewPagerAdapter;
 import com.example.socialnetwork.ui.main.home.model.NewsArticle;
@@ -88,6 +89,16 @@ public class HomeFragment extends Fragment {
                     Navigation.findNavController(requireActivity(), R.id.fragment_container);
             navController.navigate(R.id.searchFragment);
         });
+        ArticlesPagerAdapter adapter = new ArticlesPagerAdapter(mockArticles, article -> {
+            // mở ArticleDetailFragment
+            ArticleDetailFragment fragment = ArticleDetailFragment.newInstance(article);
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         return view;
     }
@@ -96,7 +107,6 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
         setupRecyclerViews();
         observeState();
         setupClickListeners();

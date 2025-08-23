@@ -6,8 +6,11 @@
     <color name="grey">#4E4B66</color>
     <color name="icon_grey_text">#667080</color>
     <color name="icon_grey_button">#EEF1F4</color>
-    <color name="red">#FCB3B3</color>"
+    <color name="red">#FCB3B3</color>
     <color name="purple_500">#6200EE</color>
     <color name="brand_blue">#007AFF</color>
     <color name="inactive_grey">#8E8E93</color>
+    <color name="dark_blue_thumb">#1976D2</color>
+    <color name="gray_track_unchecked">#D1D5DB</color>
+    <color name="gray_thumb_unchecked">#D1D5DB</color>
 </resources>

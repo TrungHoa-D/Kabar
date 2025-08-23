@@ -8,9 +8,37 @@
     android:background="@color/white"
     tools:context=".ui.main.profile.ProfileFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Profile"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_settings"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/settting_icon" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -18,111 +46,50 @@
             android:orientation="vertical"
             android:paddingBottom="16dp">
 
-            <!-- Header -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text="Profile"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:id="@+id/iv_settings"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/settting_icon" />
-            </RelativeLayout>
-
-            <!-- User Info Section: Avatar bên trái, thông tin + stats bên phải -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:paddingHorizontal="16dp"
-                android:paddingTop="24dp"
-                android:gravity="start|center_vertical">
+                android:paddingTop="24dp">
 
-                <!-- Avatar -->
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/iv_profile_avatar"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/avatar_default_svgrepo_com"
-                    app:shapeAppearanceOverlay="@style/CircleImageView"
-                    tools:src="@drawable/image_placeholder" />
-
-                <!-- Spacer giữa avatar và thông tin -->
-                <Space
-                    android:layout_width="16dp"
-                    android:layout_height="wrap_content"/>
-
-                <!-- Thông tin + stats -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                    <!-- Tên và quote -->
-                    <TextView
-                        android:id="@+id/tv_profile_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Wilson Franci"
-                        android:textColor="@color/black"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/iv_profile_avatar"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/wilson"
+                        app:shapeAppearanceOverlay="@style/CircleImageView"/>
 
-                    <TextView
-                        android:id="@+id/tv_profile_quote"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-                        android:textColor="#6B7280"
-                        android:textSize="14sp"
-                        android:ellipsize="end"
-                        android:maxLines="2" />
-                    <!-- Spacer giữa avatar và stats -->
-                    <Space
-                        android:layout_width="16dp"
-                        android:layout_height="wrap_content"/>
-
-                    <!-- Followers / Following / News -->
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
                         android:orientation="horizontal"
-                        android:layout_marginTop="16dp"
-                        android:gravity="start">
+                        android:gravity="center_vertical">
 
-                        <!-- Followers -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical"
                             android:gravity="center_horizontal">
-
                             <TextView
                                 android:id="@+id/tv_followers_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="2156"
+                                android:text="1.2M"
                                 android:textColor="@color/black"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -131,23 +98,20 @@
                                 android:textSize="14sp" />
                         </LinearLayout>
 
-                        <!-- Following -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical"
                             android:gravity="center_horizontal">
-
                             <TextView
                                 android:id="@+id/tv_following_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="567"
+                                android:text="124K"
                                 android:textColor="@color/black"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -156,23 +120,20 @@
                                 android:textSize="14sp" />
                         </LinearLayout>
 
-                        <!-- News -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical"
                             android:gravity="center_horizontal">
-
                             <TextView
                                 android:id="@+id/tv_news_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="23"
+                                android:text="326"
                                 android:textColor="@color/black"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
-
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -181,12 +142,29 @@
                                 android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
-
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_profile_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Wilson Franci"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_profile_quote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+                    android:textColor="#6B7280"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
-            <!-- Edit Profile & Website Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -195,7 +173,7 @@
                 android:paddingHorizontal="16dp">
 
                 <Button
-                    android:id="@+id/btn_edit_profile"
+                    android:id="@+id/btn_following"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -210,21 +188,20 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Website"
-                    android:textColor="#2563EB"
-                    android:backgroundTint="@android:color/transparent"
+                    android:textColor="@color/white"
+                    android:backgroundTint="#2563EB"
                     app:strokeColor="#2563EB"
                     app:strokeWidth="1dp"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
 
-            <!-- Tabs: News and Recent -->
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:tabIndicatorColor="#2563EB"
-                app:tabSelectedTextColor="@color/black"
+                app:tabIndicatorColor="@color/blue"
+                android:background="@android:color/transparent"
+                app:tabSelectedTextColor="@color/grey"
                 app:tabTextColor="#6B7280" />
 
             <androidx.viewpager2.widget.ViewPager2
@@ -237,7 +214,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Floating Action Button for Add Post -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_post"
         android:layout_width="wrap_content"

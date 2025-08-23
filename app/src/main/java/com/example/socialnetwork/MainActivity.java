@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
                     destination.getId() == R.id.OTPFragment ||
                     destination.getId() == R.id.resetPasswordFragment ||
                     destination.getId() == R.id.resetPasswordSuccessFragment ||
-                    destination.getId() == R.id.searchFragment
+                    destination.getId() == R.id.searchFragment||
+                    destination.getId() == R.id.settingFragment
             ) {
                 binding.bottomNavigationView.setVisibility(View.GONE);
             } else {

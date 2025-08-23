@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.socialnetwork.databinding.FragmentNewsCategoryBinding;
+import com.example.socialnetwork.ui.main.details.ArticleDetailFragment;
 import com.example.socialnetwork.ui.main.home.adapter.ArticlesPagerAdapter;
 import com.example.socialnetwork.ui.main.home.model.DataSource;
 import com.example.socialnetwork.ui.main.home.model.NewsArticle;
@@ -44,7 +45,16 @@ public class NewsCategoryFragment extends Fragment {
                 getArguments().getInt(ARG_CATEGORY_INDEX)
         );
         // Adapter sẽ dùng binding cho item_news_article
-        binding.recyclerView.setAdapter(new ArticlesPagerAdapter(articles));
+        binding.recyclerView.setAdapter(new ArticlesPagerAdapter(articles, article -> {
+            // Khi click bài viết → mở ArticleDetailFragment
+            ArticleDetailFragment fragment = ArticleDetailFragment.newInstance(article);
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(com.example.socialnetwork.R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }));
         return binding.getRoot();
     }
 }

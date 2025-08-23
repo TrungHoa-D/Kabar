@@ -14,10 +14,12 @@ import java.util.List;
 
 public class ArticlesPagerAdapter extends RecyclerView.Adapter<ArticlesPagerAdapter.ArticleViewHolder> {
 
-    private List<NewsArticle> articles;
+    private List<NewsArticle> listArticles;
+    private OnArticleClickListener listener;
 
-    public ArticlesPagerAdapter(List<NewsArticle> articles) {
-        this.articles = articles;
+    public ArticlesPagerAdapter(List<NewsArticle> listArticles, OnArticleClickListener listener) {
+        this.listArticles = listArticles;
+        this.listener = listener;
     }
 
     @NonNull
@@ -31,7 +33,7 @@ public class ArticlesPagerAdapter extends RecyclerView.Adapter<ArticlesPagerAdap
 
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
-        NewsArticle article = articles.get(position);
+        NewsArticle article = listArticles.get(position);
 
         holder.binding.articleCategory.setText(article.getCategory());
         holder.binding.articleTitle.setText(article.getTitle());
@@ -46,11 +48,16 @@ public class ArticlesPagerAdapter extends RecyclerView.Adapter<ArticlesPagerAdap
         Glide.with(holder.itemView.getContext())
                 .load(article.getSourceLogoResId())
                 .into(holder.binding.articleSourceLogo);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onArticleClick(article);
+        });
+
     }
 
     @Override
     public int getItemCount() {
-        return articles.size();
+        return listArticles.size();
     }
 
     static class ArticleViewHolder extends RecyclerView.ViewHolder {

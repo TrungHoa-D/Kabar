@@ -12,10 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.socialnetwork.MainActivity;
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.databinding.FragmentLoginBinding;
-
 
 public class LoginFragment extends Fragment {
 
@@ -76,8 +74,9 @@ public class LoginFragment extends Fragment {
                 // **MỚI**: Lưu thông tin đăng nhập nếu CheckBox được chọn
                 if (binding.cbRememberMe.isChecked()) {
                     String username = binding.etUsername.getText().toString().trim();
-                    String password = binding.etPassword.getText().toString();
-                    viewModel.saveLoginInfo(username, password);
+                    String password = binding.etPassword.getText().toString().trim();
+                    String token = state.token;
+                    viewModel.saveLoginInfo(username, password, token);
                 }
 
                 Toast.makeText(getContext(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
@@ -85,14 +84,6 @@ public class LoginFragment extends Fragment {
             }
         });
     }
-
-    // Đặt hàm này trong LoginFragment.java
-//    private void navigateToMainApp() {
-//        Intent intent = new Intent(requireActivity(), MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        startActivity(intent);
-//        requireActivity().finish();
-//    }
 
     @Override
     public void onDestroyView() {
