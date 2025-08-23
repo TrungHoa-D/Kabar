@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".ui.main.bookmark.BookmarkFragment">
+    tools:context=".ui.main.message.MessageFragment">
 
     <TextView
         android:layout_width="match_parent"

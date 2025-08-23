@@ -9,6 +9,7 @@
     <color name="red">#FCB3B3</color>"
     <color name="purple_500">#6200EE</color>
     <color name="brand_blue">#007AFF</color>
+    <color name="light_blue">#87CEFA</color>
     <color name="inactive_grey">#8E8E93</color>
     <color name="md_theme_light_primary">#006492</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>

@@ -1,6 +1,7 @@
 package com.example.socialnetwork.ui.main.settings;
 
 import android.app.Application;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -43,15 +44,13 @@ public class SettingsViewModel extends AndroidViewModel {
         authApiService.logout().enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                // Dù thành công hay thất bại từ server, vẫn xóa token và điều hướng về login
-                tokenManager.clearToken();
+                tokenManager.clear();
                 _state.setValue(new SettingsState(false, true, null));
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                // Nếu lỗi mạng, vẫn coi như đăng xuất thành công ở client
-                tokenManager.clearToken();
+                tokenManager.clear();
                 _state.setValue(new SettingsState(false, true, "Network error, logged out locally."));
             }
         });

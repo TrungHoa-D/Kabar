@@ -14,9 +14,9 @@
         android:title="Explore" />
 
     <item
-        android:id="@+id/bookmarkFragment"
-        android:icon="@drawable/bookmark_icon"
-        android:title="Bookmark" />
+        android:id="@+id/messageFragment"
+        android:icon="@drawable/ic_message_outlined"
+        android:title="Message" />
 
     <item
         android:id="@+id/profileFragment"
