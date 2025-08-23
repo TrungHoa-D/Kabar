@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.bumptech.glide.Glide;
 import com.example.socialnetwork.R;
 import com.example.socialnetwork.data.model.dto.UserDto;
@@ -64,6 +66,21 @@ public class UserProfileFragment extends Fragment implements ArticlesPagerAdapte
                 viewModel.toggleFollow(currentUser);
             }
         });
+
+        binding.btnMessage.setOnClickListener(v -> {
+            if (currentUser != null) {
+                if (currentUser.isFollowed()) {
+                    NavDirections action = UserProfileFragmentDirections.actionUserProfileFragmentToChatFragment(
+                            currentUser.getId(),
+                            currentUser.getFullName(),
+                            currentUser.getAvatarUrl()
+                    );
+                    NavHostFragment.findNavController(this).navigate(action);
+                } else {
+                    Toast.makeText(getContext(), "You must follow this user to send a message.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setupToolbar() {
@@ -108,23 +125,38 @@ public class UserProfileFragment extends Fragment implements ArticlesPagerAdapte
         String currentLoginUserId = tokenManager.getCurrentUserId();
         if (currentLoginUserId != null && currentLoginUserId.equals(user.getId())) {
             binding.btnFollow.setVisibility(View.GONE);
+            binding.btnMessage.setVisibility(View.GONE);
         } else {
             binding.btnFollow.setVisibility(View.VISIBLE);
+            binding.btnMessage.setVisibility(View.VISIBLE);
             updateFollowButton(user.isFollowed());
+            updateMessageButton(user.isFollowed());
         }
     }
 
     private void updateFollowButton(boolean isFollowed) {
         if (isFollowed) {
             binding.btnFollow.setText("Following");
-            ((MaterialButton)binding.btnFollow).setIcon(null);
-            binding.btnFollow.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.md_theme_light_surfaceVariant));
-            binding.btnFollow.setTextColor(ContextCompat.getColor(requireContext(), R.color.md_theme_light_onSurfaceVariant));
+            ((MaterialButton) binding.btnFollow).setIcon(null);
+            binding.btnFollow.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.light_blue));
+            binding.btnFollow.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue));
 
         } else {
             binding.btnFollow.setText("Follow");
             binding.btnFollow.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue));
             binding.btnFollow.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+        }
+    }
+
+    private void updateMessageButton(boolean isFollowed) {
+        if (isFollowed) {
+            binding.btnMessage.setEnabled(true);
+            binding.btnMessage.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue));
+            binding.btnMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+        } else {
+            binding.btnMessage.setEnabled(false);
+            binding.btnMessage.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.grey));
+            binding.btnMessage.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
         }
     }
 
