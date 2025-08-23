@@ -130,7 +130,7 @@ public class UserProfileFragment extends Fragment implements ArticlesPagerAdapte
 
     @Override
     public void onPostClick(long postId) {
-        NavDirections action = UserProfileFragmentDirections.actionUserProfileFragmentToDetailFragment(postId);
+        NavDirections action = (NavDirections) UserProfileFragmentDirections.actionUserProfileFragmentToDetailFragment(postId);
         NavHostFragment.findNavController(this).navigate(action);
     }
 

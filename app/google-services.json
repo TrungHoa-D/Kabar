@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "242616514937",
+    "project_id": "kabar-93489",
+    "storage_bucket": "kabar-93489.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242616514937:android:ac1460c7d133f54e8957a8",
+        "android_client_info": {
+          "package_name": "com.example.socialnetwork"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZu29y1ZBfXc-DBbHYDCk1wXmh_DhLuYg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

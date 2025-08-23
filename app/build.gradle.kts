@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.androidx.navigation.safeargs)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -82,4 +83,10 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.navigation:navigation-ui:2.7.7")
     annotationProcessor("androidx.navigation:navigation-safe-args-generator:2.7.7")
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.google.firebase:firebase-auth")
+    implementation ("com.google.firebase:firebase-firestore")
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
 }
